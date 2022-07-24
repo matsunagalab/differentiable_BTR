@@ -41,6 +41,12 @@ The files are organied as follows:
   - `blindtip_myosin_original_863-892.ipynb` notebook performs the original BTR
  
   - `blindtip_myosin_original_863-892.ipynb` notebook performs the differentiable BTR
+  
+## License
+
+This repository is licensed under the under the terms of GNU General Public License v3.0. 
+
+Quaternion data contained in `quaternion/` directory were taken from the repository of the BioEM program written by Cossio et al. https://github.com/bio-phys/BioEM. These are separately licensed under the terms of the GNU General Public License. Please check the license file `quaternion/LICENSE`. 
  
 ## Contact
 
