@@ -3,7 +3,7 @@
 This repository contains Jupyter notebooks for differentiable blind tip reconstruction (BTR) used in Matsunaga et al. (2022). 
 
 All notebooks are written in Julia programming language. You need to install julia before using the notebooks. 
-Also, the notebooks depends on several packages. The package can be installed by the following commands:
+Also, the notebooks depend on several packages. The package can be installed as follows:
 
 ```julia
 $ julia
