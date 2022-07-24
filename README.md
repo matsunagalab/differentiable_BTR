@@ -1,4 +1,4 @@
-# differentiable blind tip reconstruction
+# Differentiable blind tip reconstruction
 
 This repository contains Jupyter notebooks for differentiable blind tip reconstruction used in Matsunaga et al. (2022). 
 
