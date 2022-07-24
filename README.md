@@ -1,4 +1,4 @@
-## differentiable blind tip reconstruction
+# differentiable blind tip reconstruction
 
 This repository contains Jupyter notebooks for differentiable blind tip reconstruction used in Matsunaga et al. (2022). 
 
@@ -15,4 +15,9 @@ pkg> add https://github.com/matsunagalab/MDToolbox.jl.git
 julia> using IJulia
 julia> exit()
 ```
+
+## Contact
+
+- Yasuhiro Matsunaga
+- ymatsunaga@mail.saitama-u.ac.jp
 
