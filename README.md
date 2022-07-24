@@ -18,7 +18,7 @@ julia> exit()
 
 ## Descriptions on files
 
-The files are organied as the following:
+The files are organied as follows:
 
 - `single_tip/` contains the twin experiment notebooks for single tip shape
 
@@ -47,5 +47,4 @@ The files are organied as the following:
 Yasuhiro Matsunaga
 
 ymatsunaga@mail.saitama-u.ac.jp
-
 
