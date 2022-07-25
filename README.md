@@ -20,27 +20,27 @@ julia> exit()
 
 The files are organied as follows:
 
-- `single_tip/` contains the twin experiment notebooks for single tip shape
+- [single_tip/](https://github.com/matsunagalab/differentiable_BTR/tree/main/single_tip) contains the twin experiment notebooks for single tip shape
 
-  - `blindtip_original.ipynb` notebook performs the original BTR under noise-free condition
+  - [blindtip_original.ipynb](https://github.com/matsunagalab/differentiable_BTR/blob/main/single_tip/blindtip_original.ipynb) notebook performs the original BTR under noise-free condition
  
-  - `blindtip_opening.ipynb` notebook performs the differentiable BTR under noise-free condition
+  - [blindtip_opening.ipynb](https://github.com/matsunagalab/differentiable_BTR/blob/main/single_tip/blindtip_opening.ipynb) notebook performs the differentiable BTR under noise-free condition
 
-  - `blindtip_original_randn.ipynb` notebook performs the original BTR under noisy condition
+  - [blindtip_original_randn.ipynb](https://github.com/matsunagalab/differentiable_BTR/blob/main/single_tip/blindtip_original_randn.ipynb) notebook performs the original BTR under noisy condition
  
-  - `blindtip_opening_randn.ipynb` notebook performs the differentiable BTR under noisy condition
+  - [blindtip_opening_randn.ipynb](https://github.com/matsunagalab/differentiable_BTR/blob/main/single_tip/blindtip_opening_randn.ipynb) notebook performs the differentiable BTR under noisy condition
 
-- `double_tip/` contains the twin experiment notebooks for double tip shape
+- [double_tip/](https://github.com/matsunagalab/differentiable_BTR/tree/main/double_tip) contains the twin experiment notebooks for double tip shape
 
-  - `blindtip_original_randn.ipynb` notebook performs the original BTR under noisy condition
+  - [blindtip_original_randn.ipynb](https://github.com/matsunagalab/differentiable_BTR/blob/main/double_tip/blindtip_original_randn.ipynb) notebook performs the original BTR under noisy condition
  
-  - `blindtip_opening_randn.ipynb` notebook performs the differentiable BTR under noisy condition
+  - [blindtip_opening_randn.ipynb](https://github.com/matsunagalab/differentiable_BTR/blob/main/double_tip/blindtip_opening_randn.ipynb) notebook performs the differentiable BTR under noisy condition
 
-- `myosin/` contains the notebooks for the BTR of high-speed AFM data of Myosin V walking
+- [myosin/](https://github.com/matsunagalab/differentiable_BTR/tree/main/myosin) contains the notebooks for the BTR of high-speed AFM data of Myosin V walking
 
-  - `blindtip_myosin_original_863-892.ipynb` notebook performs the original BTR
+  - [blindtip_myosin_original_863-892.ipynb](https://github.com/matsunagalab/differentiable_BTR/blob/main/myosin/blindtip_myosin_original_863-892.ipynb) notebook performs the original BTR
  
-  - `blindtip_myosin_opening_863-892.ipynb` notebook performs the differentiable BTR
+  - [blindtip_myosin_opening_863-892.ipynb](https://github.com/matsunagalab/differentiable_BTR/blob/main/myosin/blindtip_myosin_opening_863-892.ipynb) notebook performs the differentiable BTR
   
 ## License
 
