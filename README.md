@@ -46,6 +46,10 @@ The files are organied as follows:
  
   - [blindtip_myosin_opening_863-892.ipynb](https://github.com/matsunagalab/differentiable_BTR/blob/main/myosin/blindtip_myosin_opening_863-892.ipynb) notebook performs the differentiable BTR
   
+## Acknowledgement and Citation
+
+The original BTR in the notebooks is based on the algorithm and code provided by Villarrubia, J. Res. Natl. Inst. Stand. Technol. 102, 425 (1997). If you use the original BTR of the notebooks, please cite this paper. 
+
 ## License
 
 This repository is licensed under the under the terms of GNU General Public License v3.0. 
