@@ -1,4 +1,4 @@
-# End-to-End differentiable blind tip reconstruction
+# End-to-end differentiable blind tip reconstruction
 
 This repository contains Jupyter notebooks for the end-to-end differentiable blind tip reconstruction (BTR) used in Matsunaga et al. (2022). 
 
