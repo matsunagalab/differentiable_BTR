@@ -1,6 +1,6 @@
-# Differentiable blind tip reconstruction
+# End-to-End differentiable blind tip reconstruction
 
-This repository contains Jupyter notebooks for differentiable blind tip reconstruction (BTR) used in Matsunaga et al. (2022). 
+This repository contains Jupyter notebooks for the end-to-end differentiable blind tip reconstruction (BTR) used in Matsunaga et al. (2022). 
 
 All notebooks are written in Julia programming language. You need to install julia before using the notebooks. 
 Also, the notebooks depend on several packages. The packages can be installed as follows:
@@ -49,6 +49,8 @@ The files are organied as follows:
 ## Acknowledgement and Citation
 
 The original BTR in the notebooks is based on the algorithm and code provided by Villarrubia, J. Res. Natl. Inst. Stand. Technol. 102, 425 (1997). If you use the original BTR of the notebooks, please cite this paper. 
+
+The original BTR with a improved regularization scheme is based on F. Tian, X. Qian, and J. S. Villarrubia, Ultramicroscopy 109, 44 (2008), and G. Jóźwiak, A. Henrykowski, A. Masalska, and T. Gotszalk, Ultramicroscopy 118, 1 (2012).
 
 ## License
 
