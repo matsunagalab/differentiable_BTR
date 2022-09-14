@@ -12,7 +12,7 @@ function parse_commandline()
         "--minimum_ratio_inliers"
             arg_type = Float64
             default = 0.2
-            help = "The minimum percentage of inliears in the total data. If the percentage is smaller than this, the model by those inliers is ignored."
+            help = "The minimum percentage of inliears in the total data. If the percentage is smaller than this value, the model constructed by those inliers is ignored."
         "--cutoff_inliers"
             arg_type = Float64
             default = 20.0
