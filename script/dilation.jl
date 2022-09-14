@@ -4,17 +4,17 @@ using MDToolbox
 
 # define commandline options
 function parse_commandline()
-    s = ArgParseSettings("Perform erosion of AFM image with a given tip shape. Output files are created in the same direcoty of the AFM image files. _erosion is added to the file name.")
+    s = ArgParseSettings("Perform dilation of molecular surface image with a given tip shape. Output files are created in the same direcoty of the surface image files. _dilation is added to the file name.")
 
     @add_arg_table! s begin
         "--tip"
             arg_type = String
             default = "tip.csv"
-            help = "Input file name for tip shape used in erosion. Contains the heights of pixels in Angstrom. Columns correspond to the x-axis (width). Rows are the y-axis (height)."
+            help = "Input file name for tip shape used in dilation. Contains the heights of pixels in Angstrom. Column correspond to the x-axis (width). Rows are the y-axis (height)."
         "arg1"
             nargs = '+'
             arg_type = String
-            help = "CSV file names of AFM images. Each CSV contains the heights of pixels in Angstrom. Columns correspond to the x-axis (width). Rows are the y-axis (height)."
+            help = "CSV file names of molecular surface images. Each CSV contains the heights of pixels in Angstrom. Columns correspond to the x-axis (width). Rows are the y-axis (height)."
     end
 
     s.epilog = """
@@ -41,10 +41,10 @@ function main(args)
     # output
     for input in inputs
         image = readdlm(input, ',')
-        image_erosion = ierosion(image, P)
+        image_dilation = idilation(image, P)
         #output = dirname(input) *
-        output = input * "_erosion"
-        writedlm(output, image_erosion, ',')
+        output = input * "_dilation"
+        writedlm(output, image_dilation, ',')
     end
 
     return 0

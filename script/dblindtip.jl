@@ -7,7 +7,7 @@ using MDToolbox
 
 # define commandline options
 function parse_commandline()
-    s = ArgParseSettings("Options for the end-to-end differentiable blind tip reconstruction")
+    s = ArgParseSettings("Perform the end-to-end differentiable blind tip reconstruction from given AFM images")
 
     @add_arg_table! s begin
         "--lambda"

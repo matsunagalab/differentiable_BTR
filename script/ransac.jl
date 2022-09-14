@@ -2,16 +2,29 @@ using ArgParse
 using DelimitedFiles
 using MDToolbox
 using Random
+using Statistics
 
 # define commandline options
 function parse_commandline()
-    s = ArgParseSettings("Perform erosion of AFM image with a given tip shape. Output files are created in the same direcoty of the AFM image files. _erosion is added to the file name.")
+    s = ArgParseSettings("Correct tilt in AFM images with the RANSAC (Random Sample Consensus) algorithm. Output files are created in the same direcoty of the AFM image files. _ransac is added to the file name for tilting-corrected images. _inlier is added for images containing detected inliers.")
 
     @add_arg_table! s begin
-        "--tip"
-            arg_type = String
-            default = "tip.csv"
-            help = "Input file name for tip shape used in erosion. Contains the heights of pixels in Angstrom. Column correspond to the x-axis (width). Rows are the y-axis (height)."
+        "--minimum_ratio_inliers"
+            arg_type = Float64
+            default = 0.2
+            help = "The minimum percentage of inliears in the total data. If the percentage is smaller than this, the model by those inliers is ignored."
+        "--cutoff_inliers"
+            arg_type = Float64
+            default = 20.0
+            help = "If the residuals from the model constructed from random samples are within this range, a sample is considered as inlier."
+        "--num_iter"
+            arg_type = Int64
+            default = 10000
+            help = "The number of trials to fit by random sampling"
+        "--nsample"
+            arg_type = Int64
+            default = 100
+            help = "The number of random samples for each trial"
         "arg1"
             nargs = '+'
             arg_type = String
@@ -21,8 +34,8 @@ function parse_commandline()
     s.epilog = """
         examples:\n
         \n
-        \ua0\ua0$(basename(Base.source_path())) --tip tip.csv data/afm01.csv data/afm02.csv\n
-        \ua0\ua0$(basename(Base.source_path())) --tip tip.csv data/afm*.csv\n
+        \ua0\ua0$(basename(Base.source_path())) data/afm01.csv data/afm02.csv\n
+        \ua0\ua0$(basename(Base.source_path())) data/afm*.csv\n
         \n
         """
 
@@ -33,7 +46,7 @@ end
 # example usage:
 # 
 # Random.seed!(1234)
-# images, images_inliers = ransac(images, minimum_ratio_inliers=0.2, cutoff_inliers=10.0*2, nsample=50, num_iter=10000);
+# images_ransac, images_inliers = ransac(images, minimum_ratio_inliers=0.2, cutoff_inliers=10.0*2, nsample=50, num_iter=10000);
 
 function ransac(afms; minimum_ratio_inliers=0.2, cutoff_inliers=10.0*2, num_iter=10000, nsample=100)
     nframe = length(afms)
@@ -48,19 +61,18 @@ function ransac(afms; minimum_ratio_inliers=0.2, cutoff_inliers=10.0*2, num_iter
     for iframe = 1:nframe
         for h = 1:height, w = 1:width
             z = afms[iframe][h, w]
-            if abs(z) > eps(T)
+            #if abs(z) > eps(T)
                 icount += 1
                 X[icount, 2] = h
                 X[icount, 3] = w
                 y[icount] = z
                 f[icount] = iframe
-            end
+            #end
         end
     end
     X = X[1:icount, :]
     y = y[1:icount]
     f = f[1:icount]
-    #W = inv(X' * X) * X' * y
 
     W_best = zeros(T, 3)
     index_inliers_best = zeros(T, icount)
@@ -86,22 +98,20 @@ function ransac(afms; minimum_ratio_inliers=0.2, cutoff_inliers=10.0*2, num_iter
         rmse = sqrt.((y_sub .- (W[1] .+ W[2] .* X_sub[:, 1] .+ W[3] .* X_sub[:, 2])).^2)
         if mean(rmse) < rmse_min
             rmse_min = mean(rmse)
+            println("trial = $(inum)")
+            println("best model updated: rmse = $(rmse_min)")
             W_best .= W
             index_inliers_best .= index_inliers
-            @show rmse_min
         end
     end
 
-    @show W_best
-    #afms_clean = deepcopy(afms)
     afms_inliers = deepcopy(afms)
     for i = 1:icount
         iframe = Int(f[i])
         h = Int(X[i, 2])
         w = Int(X[i, 3])
-        #afms_clean[iframe][h, w] -= W_best[1] + W_best[2]*T(h) + W_best[3]*T(w)
         if index_inliers_best[i] > 0.5
-            afms_inliers[iframe][h, w] = -100.0
+            afms_inliers[iframe][h, w] = -1000.0
         end
     end
 
@@ -109,11 +119,7 @@ function ransac(afms; minimum_ratio_inliers=0.2, cutoff_inliers=10.0*2, num_iter
     for iframe = 1:nframe
         for h = 1:height, w = 1:width
             z = afms[iframe][h, w]
-            if abs(z) > eps(T)
-                afms_clean[iframe][h, w] -= W_best[1] + W_best[2]*h + W_best[3]*w
-            else
-                #afms_clean[iframe][h, w] += rmse_min * randn()
-            end
+            afms_clean[iframe][h, w] -= W_best[1] + W_best[2]*h + W_best[3]*w
        end
     end
     return afms_clean, afms_inliers
@@ -123,19 +129,31 @@ end
 function main(args)
     parsed_args = parse_commandline()
 
-    input_tip = parsed_args["tip"]
+    minimum_ratio_inliers = parsed_args["minimum_ratio_inliers"]
+    cutoff_inliers = parsed_args["cutoff_inliers"]
+    num_iter = parsed_args["num_iter"]
+    nsample = parsed_args["nsample"]
     inputs = parsed_args["arg1"]
 
     # input
-    P = readdlm(input_tip, ',')
-
-    # output
+    images = []
     for input in inputs
         image = readdlm(input, ',')
-        image_erosion = ierosion(image, P)
-        #output = dirname(input) *
-        output = input * "_erosion"
-        writedlm(output, image_erosion, ',')
+        push!(images, image)
+    end
+
+    # ransac
+    images_correct, images_inliers = ransac(images;
+                                            minimum_ratio_inliers=minimum_ratio_inliers,
+                                            cutoff_inliers=cutoff_inliers,
+                                            num_iter=num_iter, nsample=nsample)
+
+    # output
+    for i in 1:length(inputs)
+        output = inputs[i] * "_ransac"
+        writedlm(output, images_correct[i], ',')
+        output = inputs[i] * "_inlier"
+        writedlm(output, images_inliers[i], ',')
     end
 
     return 0
