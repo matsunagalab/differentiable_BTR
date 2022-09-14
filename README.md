@@ -9,7 +9,7 @@ Also, the notebooks depend on several packages. The packages can be installed as
 $ julia
 julia> 
 # enter the package mode by pressing ]
-pkg> add IJulia, Flux, Plots, Statistics, BSON, Revise, HTTP
+pkg> add IJulia, Flux, Plots, Statistics, BSON, Revise, HTTP, ArgParse
 pkg> add https://github.com/matsunagalab/MDToolbox.jl.git
 # return to the REPL mode by pressing BACKSPACE or DELETE
 julia> using IJulia
@@ -46,6 +46,52 @@ The files are organied as follows:
  
   - [blindtip_myosin_opening_863-892.ipynb](https://github.com/matsunagalab/differentiable_BTR/blob/main/myosin/blindtip_myosin_opening_863-892.ipynb) notebook performs the differentiable BTR
   
+## Standalone script
+
+Standalone scripts written in Julia are available in `script/` directory for the end-to-end differentiable blind tip reconstruction, erosion, dilation, and RANSAC (for correcting tilt in AFM images). All the scripts read and write CSV-formatted AFM images files. For each usage, please see the ouptus of `--help` option.
+
+```
+$ cd script/
+$ julia dblindtip.jl --help
+usage: dblindtip.jl [--lambda LAMBDA] [--learning_rate LEARNING_RATE]
+                    [--epochs EPOCHS] [--width WIDTH]
+                    [--height HEIGHT] [--output OUTPUT] [-h] [arg1...]
+
+Perform the end-to-end differentiable blind tip reconstruction from
+given AFM images
+
+positional arguments:
+  arg1                  CSV file names of AFM images. Each CSV
+                        contains the heights of pixels in Angstrom.
+                        Column correspond to the x-axis (width). Rows
+                        are the y-axis (height).
+
+optional arguments:
+  --lambda LAMBDA       Weight for L2 regularization term (default =
+                        0.00001) (type: Float64, default: 1.0e-5)
+  --learning_rate LEARNING_RATE
+                        Learning rate for AdamW optimier in Angstrom
+                        (default = 1.0 Angstrom) (type: Float64,
+                        default: 1.0)
+  --epochs EPOCHS       Epochs for AdamW optimizer (type: Int64,
+                        default: 100)
+  --width WIDTH         Pixels used in the width of tip. Should be
+                        smaller than the pixel width of AFM images
+                        (default=11) (type: Int64, default: 15)
+  --height HEIGHT       Pixels used in the height of tip. Should be
+                        smaller than the pixel width of AFM images
+                        (default=11) (type: Int64, default: 15)
+  --output OUTPUT       Output file name for reconstructed tip shape
+                        (default is tip.csv) (default: "tip.csv")
+  -h, --help            show this help message and exit
+
+examples:
+
+  dblindtip.jl --output tip.csv data/afm*.csv
+  dblindtip.jl --learning-rate 0.2 --epochs 200 --output tip.csv
+data/afm*.csv
+```
+
 ## Acknowledgement and Citation
 
 The original BTR in the notebooks is based on the algorithm and code provided by Villarrubia, J. Res. Natl. Inst. Stand. Technol. 102, 425 (1997). If you use the original BTR of the notebooks, please cite this paper. 
