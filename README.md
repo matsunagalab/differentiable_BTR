@@ -46,7 +46,7 @@ The files are organied as follows:
  
   - [blindtip_myosin_opening_863-892.ipynb](https://github.com/matsunagalab/differentiable_BTR/blob/main/myosin/blindtip_myosin_opening_863-892.ipynb) notebook performs the differentiable BTR
   
-## Standalone script
+## Standalone scripts
 
 Standalone scripts written in Julia are available in `script/` directory for the end-to-end differentiable blind tip reconstruction, erosion, dilation, and RANSAC (for correcting tilt in AFM images). All the scripts read and write CSV-formatted AFM images files. For each usage, please see the ouptus of `--help` option.
 
