@@ -35,16 +35,15 @@ function parse_commandline()
             default = "tip.csv"
             help = "Output file name for reconstructed tip shape (default is tip.csv)"
         "arg1"
-            nargs = '+'
             arg_type = String
-            help = "CSV file names of AFM images. Each CSV contains the heights of pixels in Angstrom. Column correspond to the x-axis (width). Rows are the y-axis (height)."
+            help = "Input directory which contains the CSV files of AFM images. Read only filenames ending with \".csv\". Each CSV contains the heights of pixels in Angstrom. Column correspond to the x-axis (width). Rows are the y-axis (height)."
     end
 
     s.epilog = """
         examples:\n
         \n
-        \ua0\ua0$(basename(Base.source_path())) --output tip.csv data/afm*.csv\n
-        \ua0\ua0$(basename(Base.source_path())) --learning-rate 0.2 --epochs 200 --output tip.csv data/afm*.csv\n
+        \ua0\ua0$(basename(Base.source_path())) --output tip.csv data/\n
+        \ua0\ua0$(basename(Base.source_path())) --learning-rate 0.2 --epochs 200 --output tip.csv data/\n
         \n
         """
 
@@ -70,13 +69,21 @@ function main(args)
     width = parsed_args["width"]
     height = parsed_args["height"]
     output = parsed_args["output"]
-    inputs = parsed_args["arg1"]
+    input_dir = parsed_args["arg1"]
 
     # input
+    if input_dir[end] != '/'
+        input_dir = input_dir * "/"
+    end
+    fnames = readdir(input_dir)
     images = []
-    for input in inputs
-        image = readdlm(input, ',')
-        push!(images, image)
+    println("Files in are read in the following order:")
+    for fname in fnames
+        if !isnothing(match(r".+\.csv$", fname))
+            println(input_dir * fname)
+            image = readdlm(input_dir * fname, ',')
+            push!(images, image)
+        end
     end
 
     # loop

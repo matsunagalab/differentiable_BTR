@@ -6,7 +6,7 @@ using Statistics
 
 # define commandline options
 function parse_commandline()
-    s = ArgParseSettings("Correct tilt in AFM images with the RANSAC (Random Sample Consensus) algorithm. Output files are created in the same direcoty of the AFM image files. _ransac is added to the file name for tilting-corrected images. _inlier is added for images containing detected inliers.")
+    s = ArgParseSettings("Correct tilt in AFM images with the RANSAC (Random Sample Consensus) algorithm. Output files are created in the same direcoty of the AFM image files. \"_ransac\" is added to the file name for tilting-corrected images. \"_inlier\" is added for images containing detected inliers.")
 
     @add_arg_table! s begin
         "--minimum_ratio_inliers"
@@ -26,16 +26,14 @@ function parse_commandline()
             default = 100
             help = "The number of random samples for each trial"
         "arg1"
-            nargs = '+'
             arg_type = String
-            help = "CSV file names of AFM images. Each CSV contains the heights of pixels in Angstrom. Column correspond to the x-axis (width). Rows are the y-axis (height)."
+            help = "Input directory which contains the CSV files of AFM images. Read only filenames ending with \".csv\". Each CSV contains the heights of pixels in Angstrom. Columns correspond to the x-axis (width). Rows are the y-axis (height)."
     end
 
     s.epilog = """
         examples:\n
         \n
-        \ua0\ua0$(basename(Base.source_path())) data/afm01.csv data/afm02.csv\n
-        \ua0\ua0$(basename(Base.source_path())) data/afm*.csv\n
+        \ua0\ua0$(basename(Base.source_path())) data/\n
         \n
         """
 
@@ -133,13 +131,23 @@ function main(args)
     cutoff_inliers = parsed_args["cutoff_inliers"]
     num_iter = parsed_args["num_iter"]
     nsample = parsed_args["nsample"]
-    inputs = parsed_args["arg1"]
+    input_dir = parsed_args["arg1"]
 
     # input
+    if input_dir[end] != '/'
+        input_dir = input_dir * "/"
+    end
+    fnames = readdir(input_dir)
     images = []
-    for input in inputs
-        image = readdlm(input, ',')
-        push!(images, image)
+    fnames_read = []
+    println("Files in are read in the following order:")
+    for fname in fnames
+        if !isnothing(match(r".+\.csv$", fname))
+            println(input_dir * fname)
+            image = readdlm(input_dir * fname, ',')
+            push!(images, image)
+            push!(fnames_read, fname)
+        end
     end
 
     # ransac
@@ -149,10 +157,10 @@ function main(args)
                                             num_iter=num_iter, nsample=nsample)
 
     # output
-    for i in 1:length(inputs)
-        output = inputs[i] * "_ransac"
+    for i in 1:length(fnames_read)
+        output = input_dir * fnames_read[i] * "_ransac"
         writedlm(output, images_correct[i], ',')
-        output = inputs[i] * "_inlier"
+        output = input_dir * fnames_read[i] * "_inlier"
         writedlm(output, images_inliers[i], ',')
     end
 

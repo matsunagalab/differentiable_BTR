@@ -10,18 +10,16 @@ function parse_commandline()
         "--tip"
             arg_type = String
             default = "tip.csv"
-            help = "Input file name for tip shape used in dilation. Contains the heights of pixels in Angstrom. Column correspond to the x-axis (width). Rows are the y-axis (height)."
+            help = "Input file name for tip shape used in dilation. Contains the heights of pixels in Angstrom. Columns correspond to the x-axis (width). Rows are the y-axis (height)."
         "arg1"
-            nargs = '+'
             arg_type = String
-            help = "CSV file names of molecular surface images. Each CSV contains the heights of pixels in Angstrom. Columns correspond to the x-axis (width). Rows are the y-axis (height)."
+            help = "Input directory which contains the CSV files of molecular surfaces. Read only filenames ending with \".csv\". Each CSV contains the heights of pixels in Angstrom. Column correspond to the x-axis (width). Rows are the y-axis (height)."
     end
 
     s.epilog = """
         examples:\n
         \n
-        \ua0\ua0$(basename(Base.source_path())) --tip tip.csv data/afm01.csv data/afm02.csv\n
-        \ua0\ua0$(basename(Base.source_path())) --tip tip.csv data/afm*.csv\n
+        \ua0\ua0$(basename(Base.source_path())) --tip tip.csv data/\n
         \n
         """
 
@@ -33,18 +31,25 @@ function main(args)
     parsed_args = parse_commandline()
 
     input_tip = parsed_args["tip"]
-    inputs = parsed_args["arg1"]
+    input_dir = parsed_args["arg1"]
 
     # input
     P = readdlm(input_tip, ',')
 
     # output
-    for input in inputs
-        image = readdlm(input, ',')
-        image_dilation = idilation(image, P)
-        #output = dirname(input) *
-        output = input * "_dilation"
-        writedlm(output, image_dilation, ',')
+    if input_dir[end] != '/'
+        input_dir = input_dir * "/"
+    end
+    fnames = readdir(input_dir)
+    println("Files in are read in the following order:")
+    for fname in fnames
+        if !isnothing(match(r".+\.csv$", fname))
+            println(input_dir * fname)
+            image = readdlm(input_dir * fname, ',')
+            image_dilation = idilation(image, P)
+            output = input_dir * fname * "_dilation"
+            writedlm(output, image_dilation, ',')
+        end
     end
 
     return 0
