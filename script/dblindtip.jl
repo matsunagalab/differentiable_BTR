@@ -72,16 +72,13 @@ function main(args)
     input_dir = parsed_args["arg1"]
 
     # input
-    if input_dir[end] != '/'
-        input_dir = input_dir * "/"
-    end
     fnames = readdir(input_dir)
     images = []
     println("Files in are read in the following order:")
     for fname in fnames
         if !isnothing(match(r".+\.csv$", fname))
-            println(input_dir * fname)
-            image = readdlm(input_dir * fname, ',')
+            println(joinpath(input_dir, fname))
+            image = readdlm(joinpath(input_dir, fname), ',')
             push!(images, image)
         end
     end

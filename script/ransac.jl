@@ -134,17 +134,14 @@ function main(args)
     input_dir = parsed_args["arg1"]
 
     # input
-    if input_dir[end] != '/'
-        input_dir = input_dir * "/"
-    end
     fnames = readdir(input_dir)
     images = []
     fnames_read = []
     println("Files in are read in the following order:")
     for fname in fnames
         if !isnothing(match(r".+\.csv$", fname))
-            println(input_dir * fname)
-            image = readdlm(input_dir * fname, ',')
+            println(joinpath(input_dir, fname))
+            image = readdlm(joinpath(input_dir, fname), ',')
             push!(images, image)
             push!(fnames_read, fname)
         end
@@ -158,9 +155,9 @@ function main(args)
 
     # output
     for i in 1:length(fnames_read)
-        output = input_dir * fnames_read[i] * "_ransac"
+        output = joinpath(input_dir, fnames_read[i]) * "_ransac"
         writedlm(output, images_correct[i], ',')
-        output = input_dir * fnames_read[i] * "_inlier"
+        output = joinpath(input_dir, fnames_read[i]) * "_inlier"
         writedlm(output, images_inliers[i], ',')
     end
 

@@ -37,17 +37,14 @@ function main(args)
     P = readdlm(input_tip, ',')
 
     # output
-    if input_dir[end] != '/'
-        input_dir = input_dir * "/"
-    end
     fnames = readdir(input_dir)
     println("Files in are read in the following order:")
     for fname in fnames
         if !isnothing(match(r".+\.csv$", fname))
-            println(input_dir * fname)
-            image = readdlm(input_dir * fname, ',')
+            println(joinpath(input_dir, fname))
+            image = readdlm(joinpath(input_dir, fname), ',')
             image_erosion = ierosion(image, P)
-            output = input_dir * fname * "_erosion"
+            output = joinpath(input_dir, fname) * "_erosion"
             writedlm(output, image_erosion, ',')
         end
     end
