@@ -55,16 +55,17 @@ $ cd script/
 $ julia dblindtip.jl --help
 usage: dblindtip.jl [--lambda LAMBDA] [--learning_rate LEARNING_RATE]
                     [--epochs EPOCHS] [--width WIDTH]
-                    [--height HEIGHT] [--output OUTPUT] [-h] [arg1...]
+                    [--height HEIGHT] [--output OUTPUT] [-h] [arg1]
 
 Perform the end-to-end differentiable blind tip reconstruction from
 given AFM images
 
 positional arguments:
-  arg1                  CSV file names of AFM images. Each CSV
-                        contains the heights of pixels in Angstrom.
-                        Column correspond to the x-axis (width). Rows
-                        are the y-axis (height).
+  arg1                  Input directory which contains the CSV files
+                        of AFM images. Read only filenames ending with
+                        ".csv". Each CSV contains the heights of
+                        pixels in Angstrom. Column correspond to the
+                        x-axis (width). Rows are the y-axis (height).
 
 optional arguments:
   --lambda LAMBDA       Weight for L2 regularization term (default =
@@ -87,9 +88,8 @@ optional arguments:
 
 examples:
 
-  dblindtip.jl --output tip.csv data/afm*.csv
-  dblindtip.jl --learning-rate 0.2 --epochs 200 --output tip.csv
-data/afm*.csv
+  dblindtip.jl --output tip.csv data/
+  dblindtip.jl --learning-rate 0.2 --epochs 200 --output tip.csv data/
 ```
 
 ## Acknowledgement and Citation
