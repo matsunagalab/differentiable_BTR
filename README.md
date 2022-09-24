@@ -18,7 +18,7 @@ julia> exit()
 
 ## Descriptions on files
 
-The files are organied as follows:
+The files are organized as follows:
 
 - [single_tip/](https://github.com/matsunagalab/differentiable_BTR/tree/main/single_tip) contains the twin experiment notebooks for single tip shape
 
@@ -48,7 +48,7 @@ The files are organied as follows:
   
 ## Standalone scripts and binaries
 
-Standalone scripts written in Julia are available in `script/` directory for the end-to-end differentiable blind tip reconstruction, erosion, dilation, and RANSAC (for correcting tilt in AFM images). All the scripts read and write CSV-formatted AFM images files. For each usage, please see the ouptus of `--help` option. Binaries and libraries are available for [Mac(ARM64)](https://suitc-my.sharepoint.com/:f:/g/personal/ymatsunaga_mail_saitama-u_ac_jp/EpgcrCt4Wt5Atzr6C4NL2HIBpd9CX_5w_VDQkzfKARDGCg?e=OMGb6n). 
+Standalone scripts written in Julia are available in `script/` directory for the end-to-end differentiable blind tip reconstruction, erosion, dilation, and RANSAC (for correcting tilt in AFM images). All the scripts read and write CSV-formatted AFM images files. For each usage, please see the ouptus of `--help` option. Binaries and libraries are available for [Linux(X86-64) and Mac(ARM64)](https://suitc-my.sharepoint.com/:f:/g/personal/ymatsunaga_mail_saitama-u_ac_jp/EpgcrCt4Wt5Atzr6C4NL2HIBpd9CX_5w_VDQkzfKARDGCg?e=OMGb6n). 
 
 ```
 $ cd script/
