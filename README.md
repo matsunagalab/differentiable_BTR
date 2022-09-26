@@ -48,7 +48,7 @@ The files are organized as follows:
   
 ## Standalone scripts and compiled binaries
 
-Standalone scripts written in Julia are available in `script/` directory for the end-to-end differentiable blind tip reconstruction, erosion, dilation, and RANSAC (for correcting tilt in AFM images). All the scripts read and write CSV-formatted AFM images files. For each usage, please see the ouptus of `--help` option. Compiled binaries and libraries are available for [Linux(X86-64) and Mac(ARM64)](https://suitc-my.sharepoint.com/:f:/g/personal/ymatsunaga_mail_saitama-u_ac_jp/EpgcrCt4Wt5Atzr6C4NL2HIBpd9CX_5w_VDQkzfKARDGCg?e=OMGb6n). 
+Standalone scripts written in Julia are available in `script/` directory for the end-to-end differentiable blind tip reconstruction, erosion, dilation, and RANSAC (for correcting tilt in AFM images). All the scripts read and write CSV-formatted AFM images files. For each usage, please see the ouptus of `--help` option. Compiled binaries and libraries are available (WITHOUT WARRANTY OF ANY KIND) for [Linux(X86-64) and Mac(ARM64)](https://suitc-my.sharepoint.com/:f:/g/personal/ymatsunaga_mail_saitama-u_ac_jp/EpgcrCt4Wt5Atzr6C4NL2HIBpd9CX_5w_VDQkzfKARDGCg?e=OMGb6n). 
 
 ```
 $ cd script/
