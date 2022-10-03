@@ -9,7 +9,7 @@ Also, the notebooks depend on several packages. The packages can be installed as
 $ julia
 julia> 
 # enter the package mode by pressing ]
-pkg> add IJulia, Flux, Plots, Statistics, BSON, Revise, HTTP, ArgParse
+pkg> add IJulia Flux Plots Statistics BSON Revise HTTP ArgParse
 pkg> add https://github.com/matsunagalab/MDToolbox.jl.git
 # return to the REPL mode by pressing BACKSPACE or DELETE
 julia> using IJulia
