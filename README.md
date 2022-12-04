@@ -1,5 +1,7 @@
 # End-to-end differentiable blind tip reconstruction
 
+![Deconvolution example](https://raw.githubusercontent.com/matsunagalab/differentiable_BTR/main/images/morphing.gif)
+
 This repository contains Jupyter notebooks for the end-to-end differentiable blind tip reconstruction (BTR) used in Matsunaga et al. (2022). 
 
 All notebooks are written in Julia programming language. You need to install julia before using the notebooks. 
