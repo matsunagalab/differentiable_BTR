@@ -98,7 +98,7 @@ function main(args)
             gs = gradient(() -> loss(x, y), ps)
             Flux.Optimise.update!(opt, ps, gs)
             m.P .= min.(m.P, 0.0)
-            m.P .= MDToolbox.translate_tip_peak(m.P)
+            m.P .= MDToolbox.translate_tip_mean(m.P)
         end
         tmp = loss(images_randn_copy[1:end], images_randn[1:end])
         println(tmp)
