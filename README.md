@@ -52,7 +52,7 @@ The files are organized as follows:
 
 Standalone scripts written in Julia are available in `script/` directory for the end-to-end differentiable blind tip reconstruction, cross validation, erosion, dilation, and RANSAC (for correcting tilt in AFM images). All the scripts read and write CSV-formatted AFM images files. For each usage, please see the ouptus of `--help` option. 
 
-A typical work flow using the scripts would be follows:
+A typical work flow using the scripts would be follows. You can try them using test data in `script/data/`.
 
 ```bash
 $ cd script/
