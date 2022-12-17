@@ -13,11 +13,11 @@ function parse_commandline()
         "--lambda"
             arg_type = Float64
             default = 0.00001
-            help = "Weight for L2 regularization term (default = 0.00001)"
+            help = "Weight for L2 regularization term"
         "--learning_rate"
             arg_type = Float64
             default = 1.0
-            help = "Learning rate for AdamW optimier in Angstrom (default = 1.0 Angstrom)"
+            help = "Learning rate for AdamW optimier in Angstrom"
         "--epochs"
             arg_type = Int64
             default = 100
@@ -25,25 +25,25 @@ function parse_commandline()
         "--width"
             arg_type = Int64
             default = 15
-            help = "Pixels used in the width of tip. Should be smaller than the pixel width of AFM images (default=11)"
+            help = "Pixels used in the width of tip. Should be smaller than the pixel width of AFM images"
         "--height"
             arg_type = Int64
             default = 15
-            help = "Pixels used in the height of tip. Should be smaller than the pixel width of AFM images (default=11)"
+            help = "Pixels used in the height of tip. Should be smaller than the pixel width of AFM images"
         "--output"
             arg_type = String
             default = "tip.csv"
-            help = "Output file name for reconstructed tip shape (default is tip.csv)"
+            help = "Output file name for reconstructed tip shape"
         "arg1"
             arg_type = String
-            help = "Input directory which contains the CSV files of AFM images. Read only filenames ending with \".csv\". Each CSV contains the heights of pixels in Angstrom. Column correspond to the x-axis (width). Rows are the y-axis (height)."
+            help = "Input directory which contains the CSV files of AFM images. Read only filenames ending with \".csv\". Each CSV contains the heights of pixels in Angstrom. Columns correspond to the x-axis (width). Rows are the y-axis (height)."
     end
 
     s.epilog = """
         examples:\n
         \n
-        \ua0\ua0$(basename(Base.source_path())) --output tip.csv data/\n
-        \ua0\ua0$(basename(Base.source_path())) --learning-rate 0.2 --epochs 200 --output tip.csv data/\n
+        julia \ua0\ua0$(basename(Base.source_path())) --output tip.csv data/\n
+        julia \ua0\ua0$(basename(Base.source_path())) --learning-rate 0.2 --epochs 200 --output tip.csv data/\n
         \n
         """
 
@@ -74,7 +74,7 @@ function main(args)
     # input
     fnames = readdir(input_dir)
     images = []
-    println("Files in are read in the following order:")
+    println("Files in $(input_dir) are read in the following order:")
     for fname in fnames
         if !isnothing(match(r".+\.csv$", fname))
             println(joinpath(input_dir, fname))
