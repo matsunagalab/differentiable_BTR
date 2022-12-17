@@ -19,7 +19,7 @@ function parse_commandline()
     s.epilog = """
         examples:\n
         \n
-        \ua0\ua0$(basename(Base.source_path())) --tip tip.csv data/
+        julia \ua0\ua0$(basename(Base.source_path())) --tip tip.csv data/
         \n
         """
 
@@ -38,7 +38,7 @@ function main(args)
 
     # output
     fnames = readdir(input_dir)
-    println("Files in $(input_dir) are read in the following order:")
+    println("# Files in $(input_dir) are read in the following order:")
     for fname in fnames
         if !isnothing(match(r".+\.csv$", fname))
             println(joinpath(input_dir, fname))
@@ -46,6 +46,12 @@ function main(args)
             image_erosion = ierosion(image, P)
             output = joinpath(input_dir, fname) * "_erosion"
             writedlm(output, image_erosion, ',')
+        end
+    end
+    for fname in fnames
+        if !isnothing(match(r".+\.csv$", fname))
+            output = joinpath(input_dir, fname) * "_erosion"
+            println("# writing the eroded images in $(output)")
         end
     end
 

@@ -3,17 +3,27 @@ using DelimitedFiles
 using Flux
 using Flux.Data: DataLoader
 using Statistics
+using MLBase
+using Plots
 using MDToolbox
 
 # define commandline options
 function parse_commandline()
-    s = ArgParseSettings("Perform the end-to-end differentiable blind tip reconstruction from given AFM images.")
+    s = ArgParseSettings("Perform cross validation and the one standard error range of MSE is plotted for the user to select an appropriate lambda value used in the subsequence blind tip reconstruction (dblindtip.jl).")
 
     @add_arg_table! s begin
-        "--lambda"
+        "--lambda_start"
             arg_type = Float64
             default = 0.00001
-            help = "Weight for L2 regularization term."
+            help = "Min value of lambda (weight) for L2 regularization term."
+        "--lambda_stop"
+            arg_type = Float64
+            default = 0.1
+            help = "Max value of lambda (weight) for L2 regularization term."
+        "--lambda_length"
+            arg_type = Int64
+            default = 10
+            help = "The number of interpolations bewteeen Min and Max of lambda (weight) for L2 regularization term. Note that the interpolation is performed in log scale, and includes the terminal values."
         "--learning_rate"
             arg_type = Float64
             default = 1.0
@@ -32,8 +42,8 @@ function parse_commandline()
             help = "Pixels used in the height of tip. Should be smaller than the pixel height of AFM images."
         "--output"
             arg_type = String
-            default = "tip.csv"
-            help = "Output file name for reconstructed tip shape."
+            default = "cv.png"
+            help = "Output png file name for the mean square error (MSE) plot."
         "arg1"
             arg_type = String
             help = "Input directory which contains the CSV files of AFM images. Read only filenames ending with \".csv\". Each CSV contains the heights of pixels in Angstrom. Columns correspond to the x-axis (width). Rows are the y-axis (height)."
@@ -42,8 +52,8 @@ function parse_commandline()
     s.epilog = """
         examples:\n
         \n
-        julia \ua0\ua0$(basename(Base.source_path())) --output tip.csv data/\n
-        julia \ua0\ua0$(basename(Base.source_path())) --learning_rate 0.2 --epochs 200 --output tip.csv data/\n
+        julia \ua0\ua0$(basename(Base.source_path())) --output cv.png data/\n
+        julia \ua0\ua0$(basename(Base.source_path())) --output cv.png --epochs 300 --lambda_start 1.0e-5 --lambda_stop 0.01 --lambda_length 5 data/\n
         \n
         """
 
@@ -88,7 +98,9 @@ end
 function main(args)
     parsed_args = parse_commandline()
 
-    lambda = parsed_args["lambda"]
+    lambda_start = parsed_args["lambda_start"]
+    lambda_stop = parsed_args["lambda_stop"]
+    lambda_length = parsed_args["lambda_length"]
     learning_rate = parsed_args["learning_rate"]
     epochs = parsed_args["epochs"]
     width = parsed_args["width"]
@@ -109,16 +121,47 @@ function main(args)
     end
 
     # blind tip reconstruction
+    println("# performing LOOCV (leave-one-out cross validation)")
+    lambdas = 10.0 .^ range(log10(lambda_start), log10(lambda_stop), lambda_length)
+
     tip = zeros(Float64, height, width)
-    println("# Loss function:")
-    loss_train = dblindtip!(tip, images, lambda, nepoch=epochs, learning_rate=learning_rate)
-    for l in loss_train
-        println(l)
+    nframe = length(images)
+    ids = collect(LOOCV(nframe))
+    loss_train = zeros(Float64, nframe, length(lambdas))
+    for iframe = 1:nframe
+        println("# LOOCV $(iframe) / $(nframe)")
+        for ilambda = 1:length(lambdas)
+            tip .= zero(Float64)
+            loss_tmp = dblindtip!(tip, images[ids[iframe]], lambdas[ilambda], nepoch=epochs, learning_rate=learning_rate)
+            loss_train[iframe, ilambda] = loss_tmp[end]
+        end
     end
 
     # output
-    println("# writing the reconstructed tip shape in $(output)")
-    writedlm(output, tip, ',')
+    println("# plotting the result of LOOCV in $(output)")
+    loss_mean = mean(loss_train, dims=1)[:]
+    loss_std = std(loss_train, dims=1)[:]
+    println("# lambda  MSE(mean)  MSE(std)")
+    for ilambda = 1:length(lambdas)
+        println("$(lambdas[ilambda]) $(loss_mean[ilambda]) $(loss_std[ilambda])")
+    end
+
+    p = plot(lambdas, loss_mean, yerror=loss_std, xaxis=:log, framestyle=:box, 
+         #markershape = :circle, 
+         xlabel="lambda", ylabel="mean square error", label=nothing, 
+         linewidth=2, dpi=150, fmt=:png, color=3, 
+         xtickfontsize=10, ytickfontsize=10, legendfontsize=12, legend=nothing, 
+         left_margin=Plots.Measures.Length(:mm, 10.0),
+         right_margin=Plots.Measures.Length(:mm, 10.0),
+         bottom_margin=Plots.Measures.Length(:mm, 10.0))
+ 
+ 
+    i_min = argmin(loss_mean)
+    p = plot!(lambdas, fill(loss_mean[i_min], length(lambdas)), 
+          ribbon=fill(loss_std[i_min], length(lambdas)), 
+          fillalpha=0.2, width=0.0, color=3)
+
+    savefig(p, output)
 
     return 0
 end

@@ -33,7 +33,7 @@ function parse_commandline()
     s.epilog = """
         examples:\n
         \n
-        \ua0\ua0$(basename(Base.source_path())) data/\n
+        julia \ua0\ua0$(basename(Base.source_path())) data/\n
         \n
         """
 
@@ -96,8 +96,8 @@ function ransac(afms; minimum_ratio_inliers=0.2, cutoff_inliers=10.0*2, num_iter
         rmse = sqrt.((y_sub .- (W[1] .+ W[2] .* X_sub[:, 1] .+ W[3] .* X_sub[:, 2])).^2)
         if mean(rmse) < rmse_min
             rmse_min = mean(rmse)
-            println("trial = $(inum)")
-            println("best model updated: rmse = $(rmse_min)")
+            println("# trial = $(inum)")
+            println("# best model updated: rmse = $(rmse_min)")
             W_best .= W
             index_inliers_best .= index_inliers
         end
@@ -137,7 +137,7 @@ function main(args)
     fnames = readdir(input_dir)
     images = []
     fnames_read = []
-    println("Files in $(input_dir) are read in the following order:")
+    println("# Files in $(input_dir) are read in the following order:")
     for fname in fnames
         if !isnothing(match(r".+\.csv$", fname))
             println(joinpath(input_dir, fname))
@@ -154,8 +154,10 @@ function main(args)
                                             num_iter=num_iter, nsample=nsample)
 
     # output
+    println("# writing the tilt-corrected images in the followings:")
     for i in 1:length(fnames_read)
         output = joinpath(input_dir, fnames_read[i]) * "_ransac"
+        println(output)
         writedlm(output, images_correct[i], ',')
         output = joinpath(input_dir, fnames_read[i]) * "_inlier"
         writedlm(output, images_inliers[i], ',')

@@ -19,7 +19,7 @@ function parse_commandline()
     s.epilog = """
         examples:\n
         \n
-        \ua0\ua0$(basename(Base.source_path())) --tip tip.csv data/\n
+        julia \ua0\ua0$(basename(Base.source_path())) --tip tip.csv data/\n
         \n
         """
 
@@ -38,7 +38,7 @@ function main(args)
 
     # output
     fnames = readdir(input_dir)
-    println("Files in $(input_dir) are read in the following order:")
+    println("# Files in $(input_dir) are read in the following order:")
     for fname in fnames
         if !isnothing(match(r".+\.csv$", fname))
             println(joinpath(input_dir, fname))
@@ -46,6 +46,12 @@ function main(args)
             image_dilation = idilation(image, P)
             output = joinpath(input_dir, fname) * "_dilation"
             writedlm(output, image_dilation, ',')
+        end
+    end
+    for fname in fnames
+        if !isnothing(match(r".+\.csv$", fname))
+            output = joinpath(input_dir, fname) * "_dilation"
+            println("# writing the dilated images in $(output)")
         end
     end
 
