@@ -11,7 +11,7 @@ Also, the notebooks depend on several packages. The packages can be installed as
 $ julia
 julia> 
 # enter the package mode by pressing ]
-pkg> add IJulia Flux Plots Statistics BSON Revise HTTP ArgParse
+pkg> add IJulia Flux Plots Statistics BSON Revise HTTP ArgParse MLBase
 pkg> add https://github.com/matsunagalab/MDToolbox.jl.git
 # return to the REPL mode by pressing BACKSPACE or DELETE
 julia> using IJulia
@@ -48,7 +48,7 @@ The files are organized as follows:
  
   - [blindtip_myosin_opening_863-892.ipynb](https://github.com/matsunagalab/differentiable_BTR/blob/main/myosin/blindtip_myosin_opening_863-892.ipynb) notebook performs the differentiable BTR
   
-## Standalone scripts and compiled binaries
+## Standalone scripts
 
 Standalone scripts written in Julia are available in `script/` directory for the end-to-end differentiable blind tip reconstruction, cross validation, erosion, dilation, and RANSAC (for correcting tilt in AFM images). All the scripts read and write CSV-formatted AFM images files. For each usage, please see the ouptus of `--help` option. 
 
@@ -58,15 +58,15 @@ A typical work flow using the scripts would be follows:
 $ cd script/
 $ julia dblindtip.jl --help # check options
 
-# perform cross validaton and select an appropriate lambda value
+# 1. perform cross validaton and select an appropriate lambda value
 $ julia dblindtip_cv.jl --output cv.png --lambda_start 1.0e-5 --lambda_stop 0.01 --lambda_length 5 data/
 $ ls -l cv.png # This plot shows the one standard error range. 
 
-# perform the end-to-end differentiable blind tip reconstruction
+# 2. perform the end-to-end differentiable blind tip reconstruction
 $ julia dblindtip.jl --output tip.csv --lambda 1.0e-5 data/
 $ ls -l tip.csv # This csv file contains the reconstructed tip shape information
 
-# perform erosion (deconvolution) with the reconstructed tip shape
+# 3. perform erosion (deconvolution) with the reconstructed tip shape
 $ julia erosion.jl --tip tip.csv data/
 $ ls data/*_erosion # These CSV files contain the eroded (deconvoluted) images
 ```
