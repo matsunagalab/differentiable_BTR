@@ -59,7 +59,7 @@ $ cd script/
 $ julia dblindtip.jl --help # check options
 
 # perform cross validaton and select an appropriate lambda value
-$ julia dblindtip_cv.jl --output cv.png --epochs 300 --lambda_start 1.0e-5 --lambda_stop 0.01 --lambda_length 5 data/
+$ julia dblindtip_cv.jl --output cv.png --lambda_start 1.0e-5 --lambda_stop 0.01 --lambda_length 5 data/
 $ ls -l cv.png # This plot shows the one standard error range. 
 
 # perform the end-to-end differentiable blind tip reconstruction
