@@ -7,33 +7,33 @@ using MDToolbox
 
 # define commandline options
 function parse_commandline()
-    s = ArgParseSettings("Perform the end-to-end differentiable blind tip reconstruction from given AFM images")
+    s = ArgParseSettings("Perform the end-to-end differentiable blind tip reconstruction from given AFM images.")
 
     @add_arg_table! s begin
         "--lambda"
             arg_type = Float64
             default = 0.00001
-            help = "Weight for L2 regularization term"
+            help = "Weight for L2 regularization term."
         "--learning_rate"
             arg_type = Float64
             default = 1.0
-            help = "Learning rate for AdamW optimier in Angstrom"
+            help = "Learning rate for AdamW optimier in Angstrom."
         "--epochs"
             arg_type = Int64
             default = 100
-            help = "Epochs for AdamW optimizer"
+            help = "Epochs for AdamW optimizer."
         "--width"
             arg_type = Int64
             default = 15
-            help = "Pixels used in the width of tip. Should be smaller than the pixel width of AFM images"
+            help = "Pixels used in the width of tip. Should be smaller than the pixel width of AFM images."
         "--height"
             arg_type = Int64
             default = 15
-            help = "Pixels used in the height of tip. Should be smaller than the pixel width of AFM images"
+            help = "Pixels used in the height of tip. Should be smaller than the pixel width of AFM images."
         "--output"
             arg_type = String
             default = "tip.csv"
-            help = "Output file name for reconstructed tip shape"
+            help = "Output file name for reconstructed tip shape."
         "arg1"
             arg_type = String
             help = "Input directory which contains the CSV files of AFM images. Read only filenames ending with \".csv\". Each CSV contains the heights of pixels in Angstrom. Columns correspond to the x-axis (width). Rows are the y-axis (height)."

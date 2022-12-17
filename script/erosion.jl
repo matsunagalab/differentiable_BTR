@@ -38,7 +38,7 @@ function main(args)
 
     # output
     fnames = readdir(input_dir)
-    println("Files in are read in the following order:")
+    println("Files in $(input_dir) are read in the following order:")
     for fname in fnames
         if !isnothing(match(r".+\.csv$", fname))
             println(joinpath(input_dir, fname))

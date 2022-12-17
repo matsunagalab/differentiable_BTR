@@ -20,11 +20,11 @@ function parse_commandline()
         "--num_iter"
             arg_type = Int64
             default = 10000
-            help = "The number of trials to fit by random sampling"
+            help = "The number of trials to fit by random sampling."
         "--nsample"
             arg_type = Int64
             default = 100
-            help = "The number of random samples for each trial"
+            help = "The number of random samples for each trial."
         "arg1"
             arg_type = String
             help = "Input directory which contains the CSV files of AFM images. Read only filenames ending with \".csv\". Each CSV contains the heights of pixels in Angstrom. Columns correspond to the x-axis (width). Rows are the y-axis (height)."
@@ -137,7 +137,7 @@ function main(args)
     fnames = readdir(input_dir)
     images = []
     fnames_read = []
-    println("Files in are read in the following order:")
+    println("Files in $(input_dir) are read in the following order:")
     for fname in fnames
         if !isnothing(match(r".+\.csv$", fname))
             println(joinpath(input_dir, fname))
