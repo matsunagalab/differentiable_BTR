@@ -2,7 +2,7 @@
 
 ![Deconvolution example](https://raw.githubusercontent.com/matsunagalab/differentiable_BTR/main/images/morphing.gif)
 
-This repository contains Jupyter notebooks for the end-to-end differentiable blind tip reconstruction (BTR) used in Matsunaga et al. (2022). 
+This repository contains Jupyter notebooks for the end-to-end differentiable blind tip reconstruction (BTR) used in Matsunaga et al. 
 
 All notebooks are written in Julia programming language. You need to install julia before using the notebooks. 
 Also, the notebooks depend on several packages. The packages can be installed as follows:
@@ -50,48 +50,25 @@ The files are organized as follows:
   
 ## Standalone scripts and compiled binaries
 
-Standalone scripts written in Julia are available in `script/` directory for the end-to-end differentiable blind tip reconstruction, erosion, dilation, and RANSAC (for correcting tilt in AFM images). All the scripts read and write CSV-formatted AFM images files. For each usage, please see the ouptus of `--help` option. Compiled binaries and libraries are available (WITHOUT WARRANTY OF ANY KIND) for [Linux(X86-64) and Mac(ARM64)](https://suitc-my.sharepoint.com/:f:/g/personal/ymatsunaga_mail_saitama-u_ac_jp/EpgcrCt4Wt5Atzr6C4NL2HIBpd9CX_5w_VDQkzfKARDGCg?e=OMGb6n). 
+Standalone scripts written in Julia are available in `script/` directory for the end-to-end differentiable blind tip reconstruction, cross validation, erosion, dilation, and RANSAC (for correcting tilt in AFM images). All the scripts read and write CSV-formatted AFM images files. For each usage, please see the ouptus of `--help` option. 
 
-```
+A typical work flow of the scripts would be follows:
+
+```bash
 $ cd script/
-$ julia dblindtip.jl --help
-usage: dblindtip.jl [--lambda LAMBDA] [--learning_rate LEARNING_RATE]
-                    [--epochs EPOCHS] [--width WIDTH]
-                    [--height HEIGHT] [--output OUTPUT] [-h] [arg1]
+$ julia dblindtip.jl --help # check options
 
-Perform the end-to-end differentiable blind tip reconstruction from
-given AFM images
+# perform cross validaton and select an appropriate lambda value
+$ julia dblindtip_cv.jl --output cv.png --epochs 300 --lambda_start 1.0e-5 --lambda_stop 0.01 --lambda_length 5 data/
+$ ls -l cv.png # This plot shows the one standard error range. 
 
-positional arguments:
-  arg1                  Input directory which contains the CSV files
-                        of AFM images. Read only filenames ending with
-                        ".csv". Each CSV contains the heights of
-                        pixels in Angstrom. Column correspond to the
-                        x-axis (width). Rows are the y-axis (height).
+# perform the end-to-end differentiable blind tip reconstruction
+$ julia dblindtip.jl --output tip.csv --lambda 1.0e-5 data/
+$ ls -l tip.csv # This csv file contains the reconstructed tip shape information
 
-optional arguments:
-  --lambda LAMBDA       Weight for L2 regularization term (default =
-                        0.00001) (type: Float64, default: 1.0e-5)
-  --learning_rate LEARNING_RATE
-                        Learning rate for AdamW optimier in Angstrom
-                        (default = 1.0 Angstrom) (type: Float64,
-                        default: 1.0)
-  --epochs EPOCHS       Epochs for AdamW optimizer (type: Int64,
-                        default: 100)
-  --width WIDTH         Pixels used in the width of tip. Should be
-                        smaller than the pixel width of AFM images
-                        (default=11) (type: Int64, default: 15)
-  --height HEIGHT       Pixels used in the height of tip. Should be
-                        smaller than the pixel width of AFM images
-                        (default=11) (type: Int64, default: 15)
-  --output OUTPUT       Output file name for reconstructed tip shape
-                        (default is tip.csv) (default: "tip.csv")
-  -h, --help            show this help message and exit
-
-examples:
-
-  dblindtip.jl --output tip.csv data/
-  dblindtip.jl --learning-rate 0.2 --epochs 200 --output tip.csv data/
+# perform erosion (deconvolution) with the reconstructed tip shape
+$ julia erosion.jl --tip tip.csv data/
+$ ls data/*_erosion # These CSV files contain the eroded (deconvoluted) images
 ```
 
 ## Acknowledgement and Citation
