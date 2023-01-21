@@ -101,7 +101,7 @@ $ julia csv2gif.jl --output erosion.gif --ext csv_erosion data/
 
 ## Citation and Acknowledgement
 
-Citation information on the end-to-end blind tip reconstruction:
+Citation information on the end-to-end differentiable blind tip reconstruction:
 
 ```
 Y. Matsunaga, S. Fuchigami, T. Ogane, and S. Takada. 
