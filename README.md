@@ -72,9 +72,11 @@ $ julia csv2gif.jl --output original.gif data/
 
 ### 2. perform cross validaton (LOOCV) and select an appropriate lambda value
 ```bash
-# Perform LOOCV and chooase an lambda value according to the one standard error rule
+# Perform LOOCV and choose an lambda value according to the one standard error rule
 $ julia dblindtip_cv.jl --output cv.png --lambda_start 1.0e-5 --lambda_stop 0.01 --lambda_length 4 data/
 ```
+
+Following the one standard error rule, it is recommended to select the largest lambda whose mean (indicate by the solid line in the figure below) falls within or around the one standard deviation of the minimum (indicated by the shaded area). In this case, lambda = 1.0e-4 would be recommended. 
 
 ![Cross validation](https://raw.githubusercontent.com/matsunagalab/differentiable_BTR/main/script/cv.png)
 
@@ -101,7 +103,9 @@ $ julia csv2gif.jl --output erosion.gif --ext csv_erosion data/
 
 ## Citation and Acknowledgement
 
-Citation information on the end-to-end differentiable blind tip reconstruction:
+### End-to-end differentiable blind tip reconstruction
+
+Citation information on [the end-to-end differentiable blind tip reconstruction](https://doi.org/10.1038/s41598-022-27057-2):
 
 ```
 Y. Matsunaga, S. Fuchigami, T. Ogane, and S. Takada. 
@@ -110,9 +114,32 @@ Sci. Rep. 13, 129 (2023).
 https://doi.org/10.1038/s41598-022-27057-2
 ```
 
+### Original blind tip reconstruction
+
 The original BTR in the notebooks is based on the algorithm and code provided by Villarrubia, J. Res. Natl. Inst. Stand. Technol. 102, 425 (1997). If you use the original BTR of the notebooks, please cite this paper. 
 
+```
+J. S. Villarrubia, 
+Algorithms for Scanned Probe Microscope Image Simulation, Surface Reconstruction, and Tip Estimation, 
+J. Res. Natl. Inst. Stand. Technol. 102, 425 (1997).
+```
+
+### Regularized blind tip reconstruction
+
 The original BTR with an improved regularization scheme is based on F. Tian, X. Qian, and J. S. Villarrubia, Ultramicroscopy 109, 44 (2008), and G. Jóźwiak, A. Henrykowski, A. Masalska, and T. Gotszalk, Ultramicroscopy 118, 1 (2012).
+
+```
+F. Tian, X. Qian, and J. S. Villarrubia, 
+Blind Estimation of General Tip Shape in AFM Imaging, 
+Ultramicroscopy 109, 44 (2008).
+```
+
+```
+G. Jóźwiak, A. Henrykowski, A. Masalska, and T. Gotszalk, 
+Regularization Mechanism in Blind Tip Reconstruction Procedure, 
+Ultramicroscopy 118, 1 (2012).
+
+```
 
 ## License
 
@@ -122,7 +149,7 @@ Quaternion data contained in `quaternion/` directory were taken from the reposit
  
 ## Contact
 
-Please feel free to create github issues, or send private data via email to us. 
+If you have any questions or troubles, please feel free to create github issues, or send email to us. 
 
 Yasuhiro Matsunaga
 
