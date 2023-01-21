@@ -40,20 +40,25 @@ function parse_commandline()
             arg_type = Int64
             default = 15
             help = "Pixels used in the height of tip. Should be smaller than the pixel height of AFM images."
+        "--ext"
+            arg_type = String
+            default = "csv"
+            help = "Extension of input AFM csv filenames that should be recognized as inputs. E.g., --ext csv_erosion recognizes 1.csv_erosion."
         "--output"
             arg_type = String
             default = "cv.png"
             help = "Output png file name for the mean square error (MSE) plot."
         "arg1"
             arg_type = String
-            help = "Input directory which contains the CSV files of AFM images. Read only filenames ending with \".csv\". Each CSV contains the heights of pixels in Angstrom. Columns correspond to the x-axis (width). Rows are the y-axis (height)."
+            default = "./"
+            help = "Input directory which contains the CSV files of AFM images. By default, read only filenames ending with \".csv\". Recognized extension can be specified with --ext option. Each CSV contains the heights of pixels in Angstrom. Columns correspond to the x-axis (width). Rows are the y-axis (height)."
     end
 
     s.epilog = """
         examples:\n
         \n
-        julia \ua0\ua0$(basename(Base.source_path())) --output cv.png data/\n
-        julia \ua0\ua0$(basename(Base.source_path())) --output cv.png --epochs 300 --lambda_start 1.0e-5 --lambda_stop 0.01 --lambda_length 5 data/\n
+        \ua0\ua0julia $(basename(Base.source_path())) --output cv.png data/\n
+        \ua0\ua0julia $(basename(Base.source_path())) --output cv.png --epochs 300 --lambda_start 1.0e-5 --lambda_stop 0.01 --lambda_length 4 data/\n
         \n
         """
 
@@ -105,6 +110,7 @@ function main(args)
     epochs = parsed_args["epochs"]
     width = parsed_args["width"]
     height = parsed_args["height"]
+    ext = parsed_args["ext"]
     output = parsed_args["output"]
     input_dir = parsed_args["arg1"]
 
@@ -113,16 +119,20 @@ function main(args)
     images = []
     println("# Files in $(input_dir) are read in the following order:")
     for fname in fnames
-        if !isnothing(match(r".+\.csv$", fname))
+        if !isnothing(match(Regex(".+\\.$(ext)" * "\$"), fname))
+        #if !isnothing(match(r".+\.csv$", fname))
             println(joinpath(input_dir, fname))
             image = readdlm(joinpath(input_dir, fname), ',')
             push!(images, image)
         end
     end
 
-    # blind tip reconstruction
-    println("# performing LOOCV (leave-one-out cross validation)")
+    # lambdas
     lambdas = 10.0 .^ range(log10(lambda_start), log10(lambda_stop), lambda_length)
+    println("# The following lambda values used: $(lambdas)")
+
+    # LOOCV
+    println("# Performing LOOCV (leave-one-out cross validation)")
 
     tip = zeros(Float64, height, width)
     nframe = length(images)
@@ -138,7 +148,7 @@ function main(args)
     end
 
     # output
-    println("# plotting the result of LOOCV in $(output)")
+    println("# Plotting the result of LOOCV in $(output)")
     loss_mean = mean(loss_train, dims=1)[:]
     loss_std = std(loss_train, dims=1)[:]
     println("# lambda  MSE(mean)  MSE(std)")

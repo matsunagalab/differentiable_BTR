@@ -50,26 +50,57 @@ The files are organized as follows:
   
 ## Standalone scripts
 
-Standalone scripts written in Julia are available in `script/` directory for the end-to-end differentiable blind tip reconstruction `dblindtip.jl`, cross validation `dblindtip_cv.jl`, erosion `erosion.jl`, dilation `dilation.jl`, and RANSAC `ransac.jl` (for correcting tilt in AFM images). All the scripts read and write CSV-formatted AFM images files. For each usage, please see the ouptus of `--help` option. 
+Standalone scripts written in Julia are available in `script/` directory for the end-to-end differentiable blind tip reconstruction `dblindtip.jl`, cross validation `dblindtip_cv.jl`, erosion `erosion.jl`, dilation `dilation.jl`, visualization of CSV files (`csv2png.jl` and `csv2gif.jl`), visualization of tip (`tip2png.jl`), and RANSAC `ransac.jl` (for correcting tilt in AFM images). All the scripts read and write CSV-formatted AFM images files. For each usage, please see the ouptus of `--help` option. 
 
-A typical work flow using the scripts would be follows. You can try them using test data in `script/data/`.
+A typical work flow using the scripts would be follows. You can try them using test data in `script/data/` (a double-tip case).
 
+### 0. check the usages and options of scripts
 ```bash
 $ cd script/
-$ julia dblindtip.jl --help # check options
-
-# 1. perform cross validaton and select an appropriate lambda value
-$ julia dblindtip_cv.jl --output cv.png --lambda_start 1.0e-5 --lambda_stop 0.01 --lambda_length 5 data/
-$ ls -l cv.png # This plot shows the one standard error range. 
-
-# 2. perform the end-to-end differentiable blind tip reconstruction
-$ julia dblindtip.jl --output tip.csv --lambda 1.0e-5 data/
-$ ls -l tip.csv # This csv file contains the reconstructed tip shape information
-
-# 3. perform erosion (deconvolution) with the reconstructed tip shape
-$ julia erosion.jl --tip tip.csv data/
-$ ls data/*_erosion # These CSV files contain the eroded (deconvoluted) images
+$ julia dblindtip.jl --help # check usage and options
 ```
+
+julia erosion.jl --tip tip.csv data/
+julia csv2gif.jl --output erosion.gif --ext csv_erosion data/
+
+### 1. visualize AFM data
+```bash
+# PNG of each CSV file
+$ julia csv2png.jl data/
+# GIF of all CSV files
+$ julia csv2gif.jl --output original.gif data/
+```
+
+![Original AFM](https://raw.githubusercontent.com/matsunagalab/differentiable_BTR/main/script/original.gif)
+
+### 2. perform cross validaton (LOOCV) and select an appropriate lambda value
+```bash
+# Perform LOOCV and chooase an lambda value according to the one standard error rule
+$ julia dblindtip_cv.jl --output cv.png --lambda_start 1.0e-5 --lambda_stop 0.01 --lambda_length 4 data/
+```
+
+![Cross validation](https://raw.githubusercontent.com/matsunagalab/differentiable_BTR/main/script/cv.png)
+
+### 3. perform the end-to-end differentiable blind tip reconstruction
+```bash
+# perform the end-to-end differentiable blind tip reconstruction
+$ julia dblindtip.jl --output tip.csv --lambda 1.0e-4 data/
+# visualize the reconstructed tip
+$ julia tip2png.jl tip.csv
+```
+
+![Reconstructed tip](https://raw.githubusercontent.com/matsunagalab/differentiable_BTR/main/script/tip.png)
+
+### 3. perform erosion (deconvolution) with the reconstructed tip shape
+```bash
+# perform erosion (deconvolution)
+$ julia erosion.jl --tip tip.csv data/
+# visualize eroded (deconvoluted) molecular surfaces
+$ julia csv2png.jl --ext csv_erosion data/
+$ julia csv2gif.jl --output erosion.gif --ext csv_erosion data/
+```
+
+![Original AFM](https://raw.githubusercontent.com/matsunagalab/differentiable_BTR/main/script/erosion.gif)
 
 ## Acknowledgement and Citation
 

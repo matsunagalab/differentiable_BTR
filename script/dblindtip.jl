@@ -7,7 +7,7 @@ using MDToolbox
 
 # define commandline options
 function parse_commandline()
-    s = ArgParseSettings("Perform the end-to-end differentiable blind tip reconstruction from given AFM images.")
+    s = ArgParseSettings("Perform the end-to-end differentiable blind tip reconstruction from given AFM data.")
 
     @add_arg_table! s begin
         "--lambda"
@@ -30,20 +30,25 @@ function parse_commandline()
             arg_type = Int64
             default = 15
             help = "Pixels used in the height of tip. Should be smaller than the pixel height of AFM images."
+        "--ext"
+            arg_type = String
+            default = "csv"
+            help = "Extension of input AFM csv filenames that should be recognized as inputs. E.g., --ext csv_erosion recognizes 1.csv_erosion."
         "--output"
             arg_type = String
             default = "tip.csv"
             help = "Output file name for reconstructed tip shape."
         "arg1"
             arg_type = String
-            help = "Input directory which contains the CSV files of AFM images. Read only filenames ending with \".csv\". Each CSV contains the heights of pixels in Angstrom. Columns correspond to the x-axis (width). Rows are the y-axis (height)."
+            default = "./"
+            help = "Input directory which contains the CSV files of AFM images. By default, read only filenames ending with \".csv\". Recognized extension can be specified with --ext option. Each CSV contains the heights of pixels in Angstrom. Columns correspond to the x-axis (width). Rows are the y-axis (height)."
     end
 
     s.epilog = """
         examples:\n
         \n
-        julia \ua0\ua0$(basename(Base.source_path())) --output tip.csv data/\n
-        julia \ua0\ua0$(basename(Base.source_path())) --learning_rate 0.2 --epochs 200 --output tip.csv data/\n
+        \ua0\ua0julia $(basename(Base.source_path())) --output tip.csv data/\n
+        \ua0\ua0julia $(basename(Base.source_path())) --learning_rate 0.2 --epochs 200 --output tip.csv data/\n
         \n
         """
 
@@ -93,6 +98,7 @@ function main(args)
     epochs = parsed_args["epochs"]
     width = parsed_args["width"]
     height = parsed_args["height"]
+    ext = parsed_args["ext"]
     output = parsed_args["output"]
     input_dir = parsed_args["arg1"]
 
@@ -101,7 +107,8 @@ function main(args)
     images = []
     println("# Files in $(input_dir) are read in the following order:")
     for fname in fnames
-        if !isnothing(match(r".+\.csv$", fname))
+        if !isnothing(match(Regex(".+\\.$(ext)" * "\$"), fname))
+        #if !isnothing(match(r".+\.csv$", fname))
             println(joinpath(input_dir, fname))
             image = readdlm(joinpath(input_dir, fname), ',')
             push!(images, image)
@@ -110,14 +117,14 @@ function main(args)
 
     # blind tip reconstruction
     tip = zeros(Float64, height, width)
-    println("# Loss function:")
+    println("# Mean square error:")
     loss_train = dblindtip!(tip, images, lambda, nepoch=epochs, learning_rate=learning_rate)
     for l in loss_train
         println(l)
     end
 
     # output
-    println("# writing the reconstructed tip shape in $(output)")
+    println("# Writing the reconstructed tip shape in $(output)")
     writedlm(output, tip, ',')
 
     return 0

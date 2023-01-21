@@ -6,7 +6,7 @@ using Statistics
 
 # define commandline options
 function parse_commandline()
-    s = ArgParseSettings("Correct tilt in AFM images with the RANSAC (Random Sample Consensus) algorithm. Output files are created in the same direcoty of the AFM image files. \"_ransac\" is added to the file name for tilting-corrected images. \"_inlier\" is added for images containing detected inliers.")
+    s = ArgParseSettings("Correct tilt in AFM data with the RANSAC (Random Sample Consensus) algorithm. Output files are created in the same direcoty of the AFM data files. \"_ransac\" is added to the file names for tilting-corrected data. \"_inlier\" is added for files containing detected inliers.")
 
     @add_arg_table! s begin
         "--minimum_ratio_inliers"
@@ -16,7 +16,7 @@ function parse_commandline()
         "--cutoff_inliers"
             arg_type = Float64
             default = 20.0
-            help = "If the residuals from the model constructed from random samples are within this range, a sample is considered as inlier."
+            help = "If the residuals from the model constructed from random samples are within this range, a sample is considered as inlier. Assumed that the unit is Angstrom."
         "--num_iter"
             arg_type = Int64
             default = 10000
@@ -27,13 +27,14 @@ function parse_commandline()
             help = "The number of random samples for each trial."
         "arg1"
             arg_type = String
-            help = "Input directory which contains the CSV files of AFM images. Read only filenames ending with \".csv\". Each CSV contains the heights of pixels in Angstrom. Columns correspond to the x-axis (width). Rows are the y-axis (height)."
+            default = "./"
+            help = "Input directory which contains the CSV files of AFM images. Read only filenames ending with \".csv\". Assumed that each CSV contains the heights of pixels in Angstrom. Columns correspond to the x-axis (width). Rows are the y-axis (height)."
     end
 
     s.epilog = """
         examples:\n
         \n
-        julia \ua0\ua0$(basename(Base.source_path())) data/\n
+        \ua0\ua0julia $(basename(Base.source_path())) data/\n
         \n
         """
 
@@ -154,12 +155,16 @@ function main(args)
                                             num_iter=num_iter, nsample=nsample)
 
     # output
-    println("# writing the tilt-corrected images in the followings:")
+    println("# Writing the tilt-corrected images:")
     for i in 1:length(fnames_read)
         output = joinpath(input_dir, fnames_read[i]) * "_ransac"
         println(output)
         writedlm(output, images_correct[i], ',')
+    end
+    println("# Writing the inlier-marked images:")
+    for i in 1:length(fnames_read)
         output = joinpath(input_dir, fnames_read[i]) * "_inlier"
+        println(output)
         writedlm(output, images_inliers[i], ',')
     end
 
