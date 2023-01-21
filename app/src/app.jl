@@ -12,43 +12,48 @@ using Random
 
 # define commandline options
 function parse_commandline_dblindtip()
-    s = ArgParseSettings("Perform the end-to-end differentiable blind tip reconstruction from given AFM images")
+    s = ArgParseSettings("Perform the end-to-end differentiable blind tip reconstruction from given AFM data.")
 
     @add_arg_table! s begin
         "--lambda"
             arg_type = Float64
             default = 0.00001
-            help = "Weight for L2 regularization term (default = 0.00001)"
+            help = "Weight for L2 regularization term."
         "--learning_rate"
             arg_type = Float64
             default = 1.0
-            help = "Learning rate for AdamW optimier in Angstrom (default = 1.0 Angstrom)"
+            help = "Learning rate for AdamW optimier in Angstrom."
         "--epochs"
             arg_type = Int64
-            default = 100
-            help = "Epochs for AdamW optimizer"
+            default = 200
+            help = "Epochs for AdamW optimizer."
         "--width"
             arg_type = Int64
             default = 15
-            help = "Pixels used in the width of tip. Should be smaller than the pixel width of AFM images (default=11)"
+            help = "Pixels used in the width of tip. Should be smaller than the pixel width of AFM images."
         "--height"
             arg_type = Int64
             default = 15
-            help = "Pixels used in the height of tip. Should be smaller than the pixel width of AFM images (default=11)"
+            help = "Pixels used in the height of tip. Should be smaller than the pixel height of AFM images."
+        "--ext"
+            arg_type = String
+            default = "csv"
+            help = "Extension of input AFM csv filenames that should be recognized as inputs. E.g., --ext csv_erosion recognizes 1.csv_erosion."
         "--output"
             arg_type = String
             default = "tip.csv"
-            help = "Output file name for reconstructed tip shape (default is tip.csv)"
+            help = "Output file name for reconstructed tip shape."
         "arg1"
             arg_type = String
-            help = "Input directory which contains the CSV files of AFM images. Read only filenames ending with \".csv\". Each CSV contains the heights of pixels in Angstrom. Column correspond to the x-axis (width). Rows are the y-axis (height)."
+            default = "./"
+            help = "Input directory which contains the CSV files of AFM images. By default, read only filenames ending with \".csv\". Recognized extension can be specified with --ext option. Each CSV contains the heights of pixels in Angstrom. Columns correspond to the x-axis (width). Rows are the y-axis (height)."
     end
 
     s.epilog = """
         examples:\n
         \n
-        \ua0\ua0$(basename(Base.source_path())) --output tip.csv data/\n
-        \ua0\ua0$(basename(Base.source_path())) --learning-rate 0.2 --epochs 200 --output tip.csv data/\n
+        \ua0\ua0julia $(basename(Base.source_path())) --output tip.csv data/\n
+        \ua0\ua0julia $(basename(Base.source_path())) --learning_rate 0.2 --epochs 200 --output tip.csv data/\n
         \n
         """
 
@@ -97,13 +102,13 @@ function main_dblindtip()::Cint
     train_loader = Flux.Data.DataLoader((data=images_randn_copy[1:end], label=images_randn[1:end]), batchsize=1, shuffle=false);
     opt = ADAMW(learning_rate, (0.9, 0.999), lambda)
     loss_train = []
-    println("Loss function:")
+    println("# Mean square error:")
     for epoch in 1:epochs
         for (x, y) in train_loader
             gs = gradient(() -> loss(x, y), ps)
             Flux.Optimise.update!(opt, ps, gs)
             m.P .= min.(m.P, 0.0)
-            m.P .= MDToolbox.translate_tip_peak(m.P)
+            m.P .= MDToolbox.translate_tip_mean(m.P)
         end
         tmp = loss(images_randn_copy[1:end], images_randn[1:end])
         println(tmp)
@@ -121,22 +126,27 @@ end
 
 # define commandline options
 function parse_commandline_dilation()
-    s = ArgParseSettings("Perform dilation of molecular surface image with a given tip shape. Output files are created in the same direcoty of the surface image files. _dilation is added to the file name.")
+    s = ArgParseSettings("Perform dilation of molecular surface data with a given tip shape. Output files are created in the same direcoty of the surface image files. _dilation is added to the file names.")
 
     @add_arg_table! s begin
         "--tip"
             arg_type = String
             default = "tip.csv"
             help = "Input file name for tip shape used in dilation. Contains the heights of pixels in Angstrom. Columns correspond to the x-axis (width). Rows are the y-axis (height)."
+        "--ext"
+            arg_type = String
+            default = "csv"
+            help = "Extension of input AFM csv filenames that should be recognized as inputs. E.g., --ext csv_erosion recognizes 1.csv_erosion."
         "arg1"
             arg_type = String
-            help = "Input directory which contains the CSV files of molecular surfaces. Read only filenames ending with \".csv\". Each CSV contains the heights of pixels in Angstrom. Column correspond to the x-axis (width). Rows are the y-axis (height)."
+            default = "./"
+            help = "Input directory which contains the CSV files of molecular surfaces. By default, read only filenames ending with \".csv\". Recognized extension can be specified with --ext option. Each CSV contains the heights of pixels in Angstrom. Column correspond to the x-axis (width). Rows are the y-axis (height)."
     end
 
     s.epilog = """
         examples:\n
         \n
-        \ua0\ua0$(basename(Base.source_path())) --tip tip.csv data/\n
+        \ua0\ua0julia $(basename(Base.source_path())) --tip tip.csv data/\n
         \n
         """
 
@@ -147,6 +157,7 @@ function main_dilation()::Cint
     parsed_args = parse_commandline_dilation()
 
     input_tip = parsed_args["tip"]
+    ext = parsed_args["ext"]
     input_dir = parsed_args["arg1"]
 
     # input
@@ -156,11 +167,11 @@ function main_dilation()::Cint
     fnames = readdir(input_dir)
     println("Files in are read in the following order:")
     for fname in fnames
-        if !isnothing(match(r".+\.csv$", fname))
+        if !isnothing(match(Regex(".+\\.$(ext)" * "\$"), fname))
             println(joinpath(input_dir, fname))
             image = readdlm(joinpath(input_dir, fname), ',')
             image_dilation = idilation(image, P)
-            output = joinpath(input_dir, fname) * "_dilation"
+            output = joinpath(input_dir, splitext(fname)[1] * ".csv_dilation")
             writedlm(output, image_dilation, ',')
         end
     end
@@ -172,22 +183,27 @@ end
 
 # define commandline options
 function parse_commandline_erosion()
-    s = ArgParseSettings("Perform erosion of AFM image with a given tip shape. Output files are created in the same direcoty of the AFM image files. _erosion is added to the file name.")
+    s = ArgParseSettings("Perform erosion of AFM data with a given tip shape. Output files are created in the same direcoty of the AFM data files. _erosion is added to the file name.")
 
     @add_arg_table! s begin
         "--tip"
             arg_type = String
             default = "tip.csv"
             help = "Input file name for tip shape used in erosion. Contains the heights of pixels in Angstrom. Columns correspond to the x-axis (width). Rows are the y-axis (height)."
+        "--ext"
+            arg_type = String
+            default = "csv"
+            help = "Extension of input AFM csv filenames that should be recognized as inputs. E.g., --ext csv_erosion recognizes 1.csv_erosion."
         "arg1"
             arg_type = String
-            help = "Input directory which contains the CSV files of AFM images. Read only filenames ending with \".csv\". Each CSV contains the heights of pixels in Angstrom. Columns correspond to the x-axis (width). Rows are the y-axis (height)."
+            default = "./"
+            help = "Input directory which contains the CSV files of AFM images. By default, read only filenames ending with \".csv\". Recognized extension can be specified with --ext option. Each CSV contains the heights of pixels in Angstrom. Columns correspond to the x-axis (width). Rows are the y-axis (height)."
     end
 
     s.epilog = """
         examples:\n
         \n
-        \ua0\ua0$(basename(Base.source_path())) --tip tip.csv data/
+        \ua0\ua0julia $(basename(Base.source_path())) --tip tip.csv data/
         \n
         """
 
@@ -207,11 +223,11 @@ function main_erosion()::Cint
     fnames = readdir(input_dir)
     println("Files in are read in the following order:")
     for fname in fnames
-        if !isnothing(match(r".+\.csv$", fname))
+        if !isnothing(match(Regex(".+\\.$(ext)" * "\$"), fname))
             println(joinpath(input_dir, fname))
             image = readdlm(joinpath(input_dir, fname), ',')
             image_erosion = ierosion(image, P)
-            output = joinpath(input_dir, fname) * "_erosion"
+            output = joinpath(input_dir, splitext(fname)[1] * ".csv_erosion")
             writedlm(output, image_erosion, ',')
         end
     end
@@ -219,10 +235,11 @@ function main_erosion()::Cint
     return 0
 end
 
-############################ erosion
+############################ ransac
+
 # define commandline options
 function parse_commandline_ransac()
-    s = ArgParseSettings("Correct tilt in AFM images with the RANSAC (Random Sample Consensus) algorithm. Output files are created in the same direcoty of the AFM image files. \"_ransac\" is added to the file name for tilting-corrected images. \"_inlier\" is added for images containing detected inliers.")
+    s = ArgParseSettings("Correct tilt in AFM data with the RANSAC (Random Sample Consensus) algorithm. Output files are created in the same direcoty of the AFM data files. \"_ransac\" is added to the file names for tilting-corrected data. \"_inlier\" is added for files containing detected inliers.")
 
     @add_arg_table! s begin
         "--minimum_ratio_inliers"
@@ -232,24 +249,25 @@ function parse_commandline_ransac()
         "--cutoff_inliers"
             arg_type = Float64
             default = 20.0
-            help = "If the residuals from the model constructed from random samples are within this range, a sample is considered as inlier."
+            help = "If the residuals from the model constructed from random samples are within this range, a sample is considered as inlier. Assumed that the unit is Angstrom."
         "--num_iter"
             arg_type = Int64
             default = 10000
-            help = "The number of trials to fit by random sampling"
+            help = "The number of trials to fit by random sampling."
         "--nsample"
             arg_type = Int64
             default = 100
-            help = "The number of random samples for each trial"
+            help = "The number of random samples for each trial."
         "arg1"
             arg_type = String
-            help = "Input directory which contains the CSV files of AFM images. Read only filenames ending with \".csv\". Each CSV contains the heights of pixels in Angstrom. Columns correspond to the x-axis (width). Rows are the y-axis (height)."
+            default = "./"
+            help = "Input directory which contains the CSV files of AFM images. Read only filenames ending with \".csv\". Assumed that each CSV contains the heights of pixels in Angstrom. Columns correspond to the x-axis (width). Rows are the y-axis (height)."
     end
 
     s.epilog = """
         examples:\n
         \n
-        \ua0\ua0$(basename(Base.source_path())) data/\n
+        \ua0\ua0julia $(basename(Base.source_path())) data/\n
         \n
         """
 

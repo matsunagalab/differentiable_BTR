@@ -149,7 +149,7 @@ Quaternion data contained in `quaternion/` directory were taken from the reposit
  
 ## Contact
 
-If you have any questions or troubles, please feel free to create github issues, or send email to us. 
+If you have any questions or troubles, feel free to create github issues, or send email to us. 
 
 Yasuhiro Matsunaga
 
