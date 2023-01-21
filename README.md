@@ -60,9 +60,6 @@ $ cd script/
 $ julia dblindtip.jl --help # check usage and options
 ```
 
-julia erosion.jl --tip tip.csv data/
-julia csv2gif.jl --output erosion.gif --ext csv_erosion data/
-
 ### 1. visualize AFM data
 ```bash
 # PNG of each CSV file
