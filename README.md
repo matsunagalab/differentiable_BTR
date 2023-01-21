@@ -2,7 +2,7 @@
 
 ![Deconvolution example](https://raw.githubusercontent.com/matsunagalab/differentiable_BTR/main/images/morphing.gif)
 
-This repository contains Jupyter notebooks for the end-to-end differentiable blind tip reconstruction (BTR) used in Matsunaga et al. 
+This repository contains Jupyter notebooks for the end-to-end differentiable blind tip reconstruction (BTR) proposed in [Matsunaga et al (2023)](https://doi.org/10.1038/s41598-022-27057-2). 
 
 All notebooks are written in Julia programming language. You need to install julia before using the notebooks. 
 Also, the notebooks depend on several packages. The packages can be installed as follows:
@@ -99,7 +99,16 @@ $ julia csv2gif.jl --output erosion.gif --ext csv_erosion data/
 
 ![Original AFM](https://raw.githubusercontent.com/matsunagalab/differentiable_BTR/main/script/erosion.gif)
 
-## Acknowledgement and Citation
+## Citation and Acknowledgement
+
+Citation information on the end-to-end blind tip reconstruction:
+
+```
+Y. Matsunaga, S. Fuchigami, T. Ogane, and S. Takada. 
+End-to-end differentiable blind tip reconstruction for noisy atomic force microscopy images. 
+Sci. Rep. 13, 129 (2023). 
+https://doi.org/10.1038/s41598-022-27057-2
+```
 
 The original BTR in the notebooks is based on the algorithm and code provided by Villarrubia, J. Res. Natl. Inst. Stand. Technol. 102, 425 (1997). If you use the original BTR of the notebooks, please cite this paper. 
 
