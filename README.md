@@ -91,7 +91,7 @@ $ julia tip2png.jl tip.csv
 
 ![Reconstructed tip](https://raw.githubusercontent.com/matsunagalab/differentiable_BTR/main/script/tip.png)
 
-### 3. perform erosion (deconvolution) with the reconstructed tip shape
+### 4. perform erosion (deconvolution) with the reconstructed tip shape
 ```bash
 # perform erosion (deconvolution)
 $ julia erosion.jl --tip tip.csv data/
@@ -115,6 +115,8 @@ This repository is licensed under the under the terms of GNU General Public Lice
 Quaternion data contained in `quaternion/` directory were taken from the repository of the BioEM program written by Cossio et al. https://github.com/bio-phys/BioEM. These are separately licensed under the terms of the GNU General Public License. Please check the license file `quaternion/LICENSE`. 
  
 ## Contact
+
+Please feel free to create github issues, or send private data via email to us. 
 
 Yasuhiro Matsunaga
 
