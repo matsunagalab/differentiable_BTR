@@ -21,7 +21,7 @@ function parse_commandline_dblindtip()
             help = "Weight for L2 regularization term."
         "--learning_rate"
             arg_type = Float64
-            default = 1.0
+            default = 0.1
             help = "Learning rate for AdamW optimier in Angstrom."
         "--epochs"
             arg_type = Int64
@@ -86,7 +86,8 @@ function main_dblindtip()::Cint
     images = []
     println("Files in are read in the following order:")
     for fname in fnames
-        if !isnothing(match(r".+\.csv$", fname))
+        if !isnothing(match(Regex(".+\\.$(ext)" * "\$"), fname))
+        #if !isnothing(match(r".+\.csv$", fname))
             println(joinpath(input_dir, fname))
             image = readdlm(joinpath(input_dir, fname), ',')
             push!(images, image)
@@ -248,7 +249,7 @@ function parse_commandline_ransac()
             help = "The minimum percentage of inliears in the total data. If the percentage is smaller than this value, the model constructed by those inliers is ignored."
         "--cutoff_inliers"
             arg_type = Float64
-            default = 20.0
+            default = 2.0
             help = "If the residuals from the model constructed from random samples are within this range, a sample is considered as inlier. Assumed that the unit is Angstrom."
         "--num_iter"
             arg_type = Int64
