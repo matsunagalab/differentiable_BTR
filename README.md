@@ -20,7 +20,7 @@ julia> exit()
 
 ## Descriptions on files
 
-The files are organized as follows:
+The files are organized as follows. Note that all scripts assume Angstrom as the unit. 
 
 - [single_tip/](https://github.com/matsunagalab/differentiable_BTR/tree/main/single_tip) contains the twin experiment notebooks for single tip shape
 
@@ -50,7 +50,7 @@ The files are organized as follows:
   
 ## Standalone scripts
 
-Standalone scripts written in Julia are available in `script/` directory for the end-to-end differentiable blind tip reconstruction `dblindtip.jl`, cross validation `dblindtip_cv.jl`, erosion `erosion.jl`, dilation `dilation.jl`, visualization of CSV files (`csv2png.jl` and `csv2gif.jl`), visualization of tip (`tip2png.jl`), and RANSAC `ransac.jl` (for correcting tilt in AFM images). All the scripts read and write CSV-formatted AFM images files. For each usage, please see the ouptus of `--help` option. 
+Standalone scripts written in Julia are available in `script/` directory for the end-to-end differentiable blind tip reconstruction `dblindtip.jl`, cross validation `dblindtip_cv.jl`, erosion `erosion.jl`, dilation `dilation.jl`, visualization of CSV files (`csv2png.jl` and `csv2gif.jl`), visualization of tip (`tip2png.jl`), and RANSAC `ransac.jl` (for correcting tilt in AFM images). All the scripts read and write CSV-formatted AFM images files. For each usage, please see the ouptus of `--help` option. Note that all scripts assume nm as the unit. 
 
 A typical work flow using the scripts would be follows. You can try them using test data in `script/data/` (a double-tip case).
 
