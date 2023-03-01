@@ -10,7 +10,7 @@ function parse_commandline()
         "--tip"
             arg_type = String
             default = "tip.csv"
-            help = "Input file name for tip shape used in erosion. Contains the heights of pixels in Angstrom. Columns correspond to the x-axis (width). Rows are the y-axis (height)."
+            help = "Input file name for tip shape used in erosion. Contains the heights of pixels in nm. Columns correspond to the x-axis (width). Rows are the y-axis (height)."
         "--ext"
             arg_type = String
             default = "csv"
@@ -18,7 +18,7 @@ function parse_commandline()
         "arg1"
             arg_type = String
             default = "./"
-            help = "Input directory which contains the CSV files of AFM images. By default, read only filenames ending with \".csv\". Recognized extension can be specified with --ext option. Each CSV contains the heights of pixels in Angstrom. Columns correspond to the x-axis (width). Rows are the y-axis (height)."
+            help = "Input directory which contains the CSV files of AFM images. By default, read only filenames ending with \".csv\". Recognized extension can be specified with --ext option. Each CSV contains the heights of pixels in nm. Columns correspond to the x-axis (width). Rows are the y-axis (height)."
     end
 
     s.epilog = """

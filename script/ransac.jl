@@ -15,8 +15,8 @@ function parse_commandline()
             help = "The minimum percentage of inliears in the total data. If the percentage is smaller than this value, the model constructed by those inliers is ignored."
         "--cutoff_inliers"
             arg_type = Float64
-            default = 20.0
-            help = "If the residuals from the model constructed from random samples are within this range, a sample is considered as inlier. Assumed that the unit is Angstrom."
+            default = 2.0
+            help = "If the residuals from the model constructed from random samples are within this range, a sample is considered as inlier. Assumed that the unit is nm."
         "--num_iter"
             arg_type = Int64
             default = 10000
@@ -28,7 +28,7 @@ function parse_commandline()
         "arg1"
             arg_type = String
             default = "./"
-            help = "Input directory which contains the CSV files of AFM images. Read only filenames ending with \".csv\". Assumed that each CSV contains the heights of pixels in Angstrom. Columns correspond to the x-axis (width). Rows are the y-axis (height)."
+            help = "Input directory which contains the CSV files of AFM images. Read only filenames ending with \".csv\". Assumed that each CSV contains the heights of pixels in nm. Columns correspond to the x-axis (width). Rows are the y-axis (height)."
     end
 
     s.epilog = """

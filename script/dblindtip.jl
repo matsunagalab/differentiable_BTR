@@ -16,8 +16,8 @@ function parse_commandline()
             help = "Weight for L2 regularization term."
         "--learning_rate"
             arg_type = Float64
-            default = 1.0
-            help = "Learning rate for AdamW optimier in Angstrom."
+            default = 0.1
+            help = "Learning rate for AdamW optimier in nm."
         "--epochs"
             arg_type = Int64
             default = 200
@@ -41,7 +41,7 @@ function parse_commandline()
         "arg1"
             arg_type = String
             default = "./"
-            help = "Input directory which contains the CSV files of AFM images. By default, read only filenames ending with \".csv\". Recognized extension can be specified with --ext option. Each CSV contains the heights of pixels in Angstrom. Columns correspond to the x-axis (width). Rows are the y-axis (height)."
+            help = "Input directory which contains the CSV files of AFM images. By default, read only filenames ending with \".csv\". Recognized extension can be specified with --ext option. Each CSV contains the heights of pixels in nm. Columns correspond to the x-axis (width). Rows are the y-axis (height)."
     end
 
     s.epilog = """
