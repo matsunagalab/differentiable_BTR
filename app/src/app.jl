@@ -78,6 +78,7 @@ function main_dblindtip()::Cint
     epochs = parsed_args["epochs"]
     width = parsed_args["width"]
     height = parsed_args["height"]
+    ext = parsed_args["ext"]
     output = parsed_args["output"]
     input_dir = parsed_args["arg1"]
 
@@ -215,6 +216,7 @@ function main_erosion()::Cint
     parsed_args = parse_commandline_erosion()
 
     input_tip = parsed_args["tip"]
+    ext = parsed_args["ext"]
     input_dir = parsed_args["arg1"]
 
     # input
