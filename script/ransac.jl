@@ -6,9 +6,17 @@ using Statistics
 
 # define commandline options
 function parse_commandline()
-    s = ArgParseSettings("Correct tilt in AFM data with the RANSAC (Random Sample Consensus) algorithm. Output files are created in the same direcoty of the AFM data files. \"_ransac\" is added to the file names for tilting-corrected data. \"_inlier\" is added for files containing detected inliers.")
+    s = ArgParseSettings("Correct tilt in AFM data (ASD file or CSV files) with the RANSAC (Random Sample Consensus) algorithm. Output CSV files are created in the same direcoty of the AFM data files. \"_ransac\" is added to the file names for tilting-corrected data. \"_inlier\" is added for files containing detected inliers.")
 
     @add_arg_table! s begin
+        "--frame_start"
+            arg_type = Int64
+            default = nothing
+            help = "Start frame number. By default, the first frame of data is used."
+        "--frame_stop"
+            arg_type = Int64
+            default = nothing
+            help = "Last frame number. By default, the last frame of data is used."
         "--minimum_ratio_inliers"
             arg_type = Float64
             default = 0.2
@@ -28,7 +36,7 @@ function parse_commandline()
         "arg1"
             arg_type = String
             default = "./"
-            help = "Input directory which contains the CSV files of AFM images. Read only filenames ending with \".csv\". Assumed that each CSV contains the heights of pixels in nm. Columns correspond to the x-axis (width). Rows are the y-axis (height)."
+            help = "Input ASD file or a directory which contains CSV files (one CSV file per AFM image). If a directory is given, read only filenames ending with \".csv\". Assumed that each CSV contains the heights of pixels in nm. Columns correspond to the x-axis (width). Rows are the y-axis (height)."
     end
 
     s.epilog = """
@@ -75,6 +83,7 @@ function ransac(afms; minimum_ratio_inliers=0.2, cutoff_inliers=10.0*2, num_iter
 
     W_best = zeros(T, 3)
     index_inliers_best = zeros(T, icount)
+    #println("num_iter = $(num_iter)")
     for inum = 1:num_iter
         # pick up random samples
         index = randperm(icount)[1:nsample]
@@ -86,6 +95,8 @@ function ransac(afms; minimum_ratio_inliers=0.2, cutoff_inliers=10.0*2, num_iter
         rmse = sqrt.((y .- (W[1] .+ W[2] .* X[:, 1] .+ W[3] .* X[:, 2])).^2)
         index_inliers = rmse .< cutoff_inliers
         ratio_inliers = sum(index_inliers) / icount
+        #println("ratio_inliers: $(ratio_inliers)")
+        #println("minimum_ratio_inliers: $(minimum_ratio_inliers)")
         if ratio_inliers < minimum_ratio_inliers
             continue
         end
@@ -95,6 +106,8 @@ function ransac(afms; minimum_ratio_inliers=0.2, cutoff_inliers=10.0*2, num_iter
         y_sub = y[index_inliers]
         W = inv(X_sub' * X_sub) * X_sub' * y_sub
         rmse = sqrt.((y_sub .- (W[1] .+ W[2] .* X_sub[:, 1] .+ W[3] .* X_sub[:, 2])).^2)
+        #println("rmse_min: $(rmse_min)")
+        #println("rmse: $(mean(rmse))")
         if mean(rmse) < rmse_min
             rmse_min = mean(rmse)
             println("# trial = $(inum)")
@@ -128,23 +141,63 @@ end
 function main(args)
     parsed_args = parse_commandline()
 
+    frame_start = parsed_args["frame_start"]
+    frame_stop = parsed_args["frame_stop"]
     minimum_ratio_inliers = parsed_args["minimum_ratio_inliers"]
     cutoff_inliers = parsed_args["cutoff_inliers"]
     num_iter = parsed_args["num_iter"]
     nsample = parsed_args["nsample"]
-    input_dir = parsed_args["arg1"]
+    input = parsed_args["arg1"]
 
-    # input
-    fnames = readdir(input_dir)
+    # check whether input is a asd file or a directory
     images = []
     fnames_read = []
-    println("# Files in $(input_dir) are read in the following order:")
-    for fname in fnames
-        if !isnothing(match(r".+\.csv$", fname))
-            println(joinpath(input_dir, fname))
-            image = readdlm(joinpath(input_dir, fname), ',')
+    if isfile(input)
+        input_dir = dirname(input)
+        println("# ASD file $(input) is read")
+        #input_dir = dirname(input)
+        #input = basename(input)
+        #ext = splitext(input)[2][2:end]
+        #input = splitext(input)[1]
+        asd = readasd(input)
+        images = []
+        for iframe = 1:length(asd.frames)
+            image = asd.frames[iframe].data
             push!(images, image)
-            push!(fnames_read, fname)
+        end
+        resx = asd.header.scanningRangeX / asd.header.pixelX
+        resy = asd.header.scanningRangeY / asd.header.pixelY
+    else
+        input_dir = input
+        fnames = readdir(input_dir)
+        println("# Files in $(input_dir) are read in the following order:")
+        for fname in fnames
+            if !isnothing(match(r".+\.csv$", fname))
+                println(joinpath(input_dir, fname))
+                image = readdlm(joinpath(input_dir, fname), ',')
+                push!(images, image)
+                push!(fnames_read, joinpath(input_dir, fname))
+            end
+        end
+    end
+
+    if frame_start != nothing
+        frame_start2 = frame_start
+    else
+        frame_start2 = 1
+    end
+    if frame_stop != nothing
+        frame_stop2 = frame_stop
+    else
+        frame_stop2 = length(images)
+    end
+    images = images[frame_start2:frame_stop2]
+
+    if isfile(input)
+        digits = length(string(abs(frame_stop2)))
+        for i = frame_start2:frame_stop2
+            output = splitext(input)[1] * "_" * lpad(i, digits, '0') * ".csv"
+            push!(fnames_read, output)
         end
     end
 
@@ -157,13 +210,13 @@ function main(args)
     # output
     println("# Writing the tilt-corrected images:")
     for i in 1:length(fnames_read)
-        output = joinpath(input_dir, fnames_read[i]) * "_ransac"
+        output = fnames_read[i] * "_ransac"
         println(output)
         writedlm(output, images_correct[i], ',')
     end
     println("# Writing the inlier-marked images:")
     for i in 1:length(fnames_read)
-        output = joinpath(input_dir, fnames_read[i]) * "_inlier"
+        output = fnames_read[i] * "_inlier"
         println(output)
         writedlm(output, images_inliers[i], ',')
     end
