@@ -5,7 +5,7 @@ using MDToolbox
 
 # define commandline options
 function parse_commandline()
-    s = ArgParseSettings("Create PNG images of given AFM data files. PNG files are created in the same direcoty of the AFM data files.")
+    s = ArgParseSettings("Create PNG images of given AFM data files (ASD file or CSV files). PNG files are created in the same direcoty of the input files.")
 
     @add_arg_table! s begin
         "--frame_start"
@@ -39,7 +39,7 @@ function parse_commandline()
         "arg1"
             arg_type = String
             default = "./"
-            help = "Input directory which contains the CSV files of AFM images. By default, read only filenames ending with \".csv\". Recognized extension can be specified with --ext option. Each CSV contains the heights of pixels. Columns correspond to the x-axis (width). Rows are the y-axis (height)."
+            help = "Input ASD file or a directory which contains the CSV files of AFM images. If a directory is given, read only filenames ending with \".csv\" by default. Recognized extension can be specified with --ext option. Each CSV contains the heights of pixels. Columns correspond to the x-axis (width). Rows are the y-axis (height)."
     end
 
     s.epilog = """
