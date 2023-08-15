@@ -7,7 +7,7 @@ This repository contains Jupyter notebooks for the end-to-end differentiable bli
 All notebooks are written in Julia programming language. You need to install julia before using the notebooks. 
 Also, the notebooks depend on several packages. The packages can be installed as follows:
 
-```julia
+```
 $ julia
 julia> 
 # enter the package mode by pressing ]
@@ -50,28 +50,28 @@ The files are organized as follows. Note that all scripts assume Angstrom as the
   
 ## Standalone scripts
 
-Standalone scripts written in Julia are available in `script/` directory for the end-to-end differentiable blind tip reconstruction `dblindtip.jl`, cross validation `dblindtip_cv.jl`, erosion `erosion.jl`, dilation `dilation.jl`, visualization of CSV files (`csv2png.jl` and `csv2gif.jl`), visualization of tip (`tip2png.jl`), and RANSAC `ransac.jl` (for correcting tilt in AFM images). All the scripts read and write CSV-formatted AFM images files. For each usage, please see the ouptus of `--help` option. Note that all scripts assume nm as the unit. 
+Standalone scripts written in Julia are available in `script/` directory for the end-to-end differentiable blind tip reconstruction `dblindtip.jl`, cross validation `dblindtip_cv.jl`, erosion `erosion.jl`, dilation `dilation.jl`, visualization of AFM data (`afm2png.jl` and `afm2gif.jl`), visualization of tip (`tip2png.jl`), and RANSAC `ransac.jl` (for correcting tilt in AFM images). All the scripts read ASD file or CSV files and write CSV files. For each usage, please see the ouptus of `--help` option. Note that all scripts assume nm as the unit. 
 
 A typical work flow using the scripts would be follows. You can try them using test data in `script/data/` (a double-tip case).
 
 ### 0. check the usages and options of scripts
-```bash
+```
 $ cd script/
 $ julia dblindtip.jl --help # check usage and options
 ```
 
 ### 1. visualize AFM data
-```bash
-# PNG of each CSV file
-$ julia csv2png.jl data/
-# GIF of all CSV files
-$ julia csv2gif.jl --output original.gif data/
+```
+# make PNG of CSV files
+$ julia afm2png.jl data/
+# make GIF of CSV files
+$ julia afm2gif.jl --output original.gif data/
 ```
 
 ![Original AFM](https://raw.githubusercontent.com/matsunagalab/differentiable_BTR/main/script/original.gif)
 
 ### 2. perform cross validaton (LOOCV) and select an appropriate lambda value
-```bash
+```
 # Perform LOOCV and choose an lambda value according to the one standard error rule
 $ julia dblindtip_cv.jl --output cv.png --lambda_start 1.0e-5 --lambda_stop 0.01 --lambda_length 4 data/
 ```
@@ -81,7 +81,7 @@ Following the one standard error rule, it is recommended to select the largest l
 ![Cross validation](https://raw.githubusercontent.com/matsunagalab/differentiable_BTR/main/script/cv.png)
 
 ### 3. perform the end-to-end differentiable blind tip reconstruction
-```bash
+```
 # perform the end-to-end differentiable blind tip reconstruction
 $ julia dblindtip.jl --output tip.csv --lambda 1.0e-4 data/
 # visualize the reconstructed tip
@@ -91,32 +91,21 @@ $ julia tip2png.jl tip.csv
 ![Reconstructed tip](https://raw.githubusercontent.com/matsunagalab/differentiable_BTR/main/script/tip.png)
 
 ### 4. perform erosion (deconvolution) with the reconstructed tip shape
-```bash
+```
 # perform erosion (deconvolution)
 $ julia erosion.jl --tip tip.csv data/
 # visualize eroded (deconvoluted) molecular surfaces
-$ julia csv2png.jl --ext csv_erosion data/
-$ julia csv2gif.jl --output erosion.gif --ext csv_erosion data/
+$ julia afm2png.jl --ext csv_erosion data/
+$ julia afm2gif.jl --output erosion.gif --ext csv_erosion data/
 ```
 
 ![Original AFM](https://raw.githubusercontent.com/matsunagalab/differentiable_BTR/main/script/erosion.gif)
 
 ## Citation and Acknowledgement
 
-### End-to-end differentiable blind tip reconstruction
-
-Citation information on [the end-to-end differentiable blind tip reconstruction](https://doi.org/10.1038/s41598-022-27057-2):
-
-```
-Y. Matsunaga, S. Fuchigami, T. Ogane, and S. Takada. 
-End-to-end differentiable blind tip reconstruction for noisy atomic force microscopy images. 
-Sci. Rep. 13, 129 (2023). 
-https://doi.org/10.1038/s41598-022-27057-2
-```
-
 ### Original blind tip reconstruction
 
-The original BTR in the notebooks is based on the algorithm and code provided by Villarrubia, J. Res. Natl. Inst. Stand. Technol. 102, 425 (1997). If you use the original BTR of the notebooks, please cite this paper. 
+The original BTR in the notebooks is based on the algorithm and code provided by Villarrubia, J. Res. Natl. Inst. Stand. Technol. 102, 425 (1997). If you use the end-to-end differentiable BTR or the original BTR, please cite this paper. 
 
 ```
 J. S. Villarrubia, 
@@ -141,6 +130,17 @@ Ultramicroscopy 118, 1 (2012).
 
 ```
 
+### End-to-end differentiable blind tip reconstruction
+
+Citation information on [the end-to-end differentiable blind tip reconstruction](https://doi.org/10.1038/s41598-022-27057-2):
+
+```
+Y. Matsunaga, S. Fuchigami, T. Ogane, and S. Takada. 
+End-to-end differentiable blind tip reconstruction for noisy atomic force microscopy images. 
+Sci. Rep. 13, 129 (2023). 
+https://doi.org/10.1038/s41598-022-27057-2
+```
+
 ## License
 
 This repository is licensed under the terms of MIT license. 
@@ -149,7 +149,7 @@ Quaternion data contained in `quaternion/` directory were taken from the reposit
  
 ## Contact
 
-If you have any questions or troubles, feel free to create github issues, or send email to us. 
+If you have any questions or troubles, feel free to create GitHub issues, or send email to us. 
 
 Yasuhiro Matsunaga
 
