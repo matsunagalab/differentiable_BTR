@@ -80,7 +80,7 @@ function main(args)
         #input = basename(input)
         #ext = splitext(input)[2][2:end]
         #input = splitext(input)[1]
-        asd = readasd(input)
+        asd = readasd(input, unit="nm")
         for iframe = 1:length(asd.frames)
             image = asd.frames[iframe].data
             push!(images, image)
