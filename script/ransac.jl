@@ -55,6 +55,40 @@ end
 # Random.seed!(1234)
 # images_ransac, images_inliers = ransac(images, minimum_ratio_inliers=0.2, cutoff_inliers=10.0*2, nsample=50, num_iter=10000);
 
+function linear_fitting(afms)
+    nframe = length(afms)
+    height, width = size(afms[1])
+    T = eltype(afms[1])
+    X = ones(T, nframe*height*width, 3)
+    y = zeros(T, nframe*height*width)
+    icount = 0
+    for iframe = 1:nframe
+        for h = 1:height, w = 1:width
+            z = afms[iframe][h, w]
+            if abs(z) > eps(T)
+                icount += 1
+                y[icount] = z
+                X[icount, 2] = h
+                X[icount, 3] = w
+            end
+        end
+    end
+    X = X[1:icount, :]
+    y = y[1:icount]
+    W = inv(X' * X) * X' * y
+
+    afms_clean = deepcopy(afms)
+    for iframe = 1:nframe
+        for h = 1:height, w = 1:width
+            z = afms[iframe][h, w]
+            if abs(z) > eps(T)
+                afms_clean[iframe][h, w] -= W[1] + W[2]*h + W[3]*w
+            end
+        end
+    end
+    return afms_clean
+end
+
 function ransac(afms; minimum_ratio_inliers=0.2, cutoff_inliers=10.0*2, num_iter=10000, nsample=100)
     nframe = length(afms)
     height, width = size(afms[1])
@@ -200,6 +234,9 @@ function main(args)
             push!(fnames_read, output)
         end
     end
+
+    # preprocess (linear fitting)
+    images = linear_fitting(images)
 
     # ransac
     images_correct, images_inliers = ransac(images;
