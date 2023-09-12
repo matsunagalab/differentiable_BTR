@@ -20,16 +20,16 @@ function parse_commandline()
             help = "Learning rate for AdamW optimier in nm."
         "--epochs"
             arg_type = Int64
-            default = 200
+            default = 300
             help = "Epochs for AdamW optimizer."
         "--width"
             arg_type = Int64
-            default = 15
-            help = "Pixels used in the width of tip. Should be smaller than the pixel width of AFM images."
+            default = 17
+            help = "Pixels used in the X axis of tip shape. Should be smaller than the X pixels width of AFM images."
         "--height"
             arg_type = Int64
-            default = 15
-            help = "Pixels used in the height of tip. Should be smaller than the pixel height of AFM images."
+            default = 11
+            help = "Pixels used in the Y axis of tip shape. Should be smaller than the Y-axis pixels of AFM images."
         "--ext"
             arg_type = String
             default = "csv"
