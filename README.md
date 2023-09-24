@@ -4,6 +4,8 @@
 
 This repository contains Jupyter notebooks for the end-to-end differentiable blind tip reconstruction (BTR) proposed in [Matsunaga et al (2023)](https://doi.org/10.1038/s41598-022-27057-2). 
 
+For explanations on the method in Japanese, please refer to the following [presentation video](https://www.youtube.com/watch?v=uFSCHjqTJSQ). 
+
 All notebooks are written in Julia programming language. You need to install julia before using the notebooks. 
 Also, the notebooks depend on several packages. The packages can be installed as follows:
 
