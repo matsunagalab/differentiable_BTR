@@ -65,12 +65,12 @@ function linear_fitting(afms)
     for iframe = 1:nframe
         for h = 1:height, w = 1:width
             z = afms[iframe][h, w]
-            if abs(z) > eps(T)
+            #if abs(z) > eps(T)
                 icount += 1
                 y[icount] = z
                 X[icount, 2] = h
                 X[icount, 3] = w
-            end
+            #end
         end
     end
     X = X[1:icount, :]
@@ -81,9 +81,9 @@ function linear_fitting(afms)
     for iframe = 1:nframe
         for h = 1:height, w = 1:width
             z = afms[iframe][h, w]
-            if abs(z) > eps(T)
+            #if abs(z) > eps(T)
                 afms_clean[iframe][h, w] -= W[1] + W[2]*h + W[3]*w
-            end
+            #end
         end
     end
     return afms_clean
